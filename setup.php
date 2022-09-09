@@ -89,9 +89,9 @@ function plugin_version_vip() {
 
    return ['name'           => "VIP",
            'version'        => PLUGIN_VIP_VERSION,
-           'author'         => 'Probesys & <a href="http://blogglpi.infotel.com">Infotel</a>',
-           'license'        => 'GPLv2+',
-           'homepage'       => 'https://github.com/InfotelGLPI/vip',
+           'author'         => '<a href="http://www.probesys.com">Probesys</a> & <a href="http://blogglpi.infotel.com">Infotel</a>',
+           'license'        => 'AGPLv3+',
+           'homepage'       => 'https://github.com/pluginsGLPI/vip',
            'requirements'   => [
               'glpi' => [
                  'min' => '10.0',
