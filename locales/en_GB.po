@@ -1,0 +1,39 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR VIP Development Team
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GLPI - VIP plugin 1.4.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-24 09:15+0200\n"
+"PO-Revision-Date: 2019-02-25 10:00+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.0.9\n"
+
+#: inc/dashboard.class.php:42 inc/dashboard.class.php:196
+msgid "Tickets VIP"
+msgstr "Tickets VIP"
+
+#: inc/group.class.php:62
+msgid "VIP management"
+msgstr "VIP management"
+
+#: inc/group.class.php:66 inc/group.class.php:135
+msgid "VIP group"
+msgstr "VIP group"
+
+#: inc/group.class.php:86 inc/profile.class.php:53 inc/profile.class.php:132
+#: inc/vip.class.php:46
+msgid "VIP"
+msgstr "VIP"
+
+#: inc/rulevipcollection.class.php:48
+msgid "Rules for assigning a group"
+msgstr "Rules for assigning a group"
