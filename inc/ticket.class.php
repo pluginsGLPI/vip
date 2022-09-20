@@ -148,7 +148,7 @@ class PluginVipTicket extends CommonDBTM {
    public static function showVIPInfos($params) {
       $item = $params['item'];
 
-      if (in_array($item->getType(), self::$types)) {
+      if ($item != null && in_array($item->getType(), self::$types)) {
          if ($item->getType() == 'Ticket') {
             if ($id = self::isTicketVip($item->getID())) {
                $name = PluginVipGroup::getVipName($id);
