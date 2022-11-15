@@ -28,7 +28,7 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
@@ -36,253 +36,270 @@ if (!defined('GLPI_ROOT')) {
  *
  * This class manages the profile rights of the plugin
  */
-class PluginVipProfile extends Profile {
+class PluginVipProfile extends Profile
+{
+    /**
+     * Get tab name for item
+     *
+     * @param CommonGLPI $item
+     * @param type       $withtemplate
+     *
+     * @return string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
+        if ($item->getType() == 'Profile'
+            && $item->getField('interface') != 'helpdesk') {
+            return __('VIP', 'vip');
+        }
+        return '';
+    }
 
-   /**
-    * Get tab name for item
-    *
-    * @param CommonGLPI $item
-    * @param type       $withtemplate
-    *
-    * @return string
-    */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+    /**
+     * display tab content for item
+     *
+     * @global type      $CFG_GLPI
+     *
+     * @param CommonGLPI $item
+     * @param type       $tabnum
+     * @param type       $withtemplate
+     *
+     * @return boolean
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        global $CFG_GLPI;
 
-      if ($item->getType() == 'Profile'
-          && $item->getField('interface') != 'helpdesk') {
-         return __('VIP', 'vip');
-      }
-      return '';
-   }
+        if ($item->getType() == 'Profile') {
+            $ID   = $item->getID();
+            $prof = new self();
 
-   /**
-    * display tab content for item
-    *
-    * @global type      $CFG_GLPI
-    *
-    * @param CommonGLPI $item
-    * @param type       $tabnum
-    * @param type       $withtemplate
-    *
-    * @return boolean
-    */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      global $CFG_GLPI;
+            self::addDefaultProfileInfos(
+                $ID,
+                ['plugin_vip' => 0]
+            );
+            $prof->showForm($ID);
+        }
 
-      if ($item->getType() == 'Profile') {
-         $ID   = $item->getID();
-         $prof = new self();
+        return true;
+    }
 
-         self::addDefaultProfileInfos($ID,
-                                      ['plugin_vip' => 0]);
-         $prof->showForm($ID);
-      }
+    /**
+     * show profile form
+     *
+     * @param type $ID
+     * @param type $options
+     *
+     * @return boolean
+     */
+    public function showForm($profiles_id = 0, $openform = true, $closeform = true)
+    {
+        echo "<div class='firstbloc'>";
+        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
+            && $openform) {
+            $profile = new Profile();
+            echo "<form method='post' action='" . $profile->getFormURL() . "'>";
+        }
 
-      return true;
-   }
+        $profile = new Profile();
+        $profile->getFromDB($profiles_id);
 
-   /**
-    * show profile form
-    *
-    * @param type $ID
-    * @param type $options
-    *
-    * @return boolean
-    */
-   function showForm($profiles_id = 0, $openform = TRUE, $closeform = TRUE) {
+        $rights = $this->getAllRights();
+        $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
+                                                           'default_class' => 'tab_bg_2',
+                                                           'title'         => __('General')]);
+        if ($canedit
+            && $closeform) {
+            echo "<div class='center'>";
+            echo Html::hidden('id', ['value' => $profiles_id]);
+            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
+            echo "</div>\n";
+            Html::closeForm();
+        }
+        echo "</div>";
 
-      echo "<div class='firstbloc'>";
-      if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
-          && $openform) {
-         $profile = new Profile();
-         echo "<form method='post' action='" . $profile->getFormURL() . "'>";
-      }
+        $this->showLegend();
+    }
 
-      $profile = new Profile();
-      $profile->getFromDB($profiles_id);
+    /**
+     * Get all rights
+     *
+     * @param type $all
+     *
+     * @return array
+     */
+    public static function getAllRights($all = false)
+    {
+        $rights = [
+           ['itemtype' => 'PluginVipGroup',
+                 'label'    => __('VIP', 'vip'),
+                 'field'    => 'plugin_vip'
+           ]
+        ];
 
-      $rights = $this->getAllRights();
-      $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-                                                         'default_class' => 'tab_bg_2',
-                                                         'title'         => __('General')]);
-      if ($canedit
-          && $closeform) {
-         echo "<div class='center'>";
-         echo Html::hidden('id', ['value' => $profiles_id]);
-         echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-         echo "</div>\n";
-         Html::closeForm();
-      }
-      echo "</div>";
+        return $rights;
+    }
 
-      $this->showLegend();
-   }
+    /**
+     * Init profiles
+     *
+     **/
 
-   /**
-    * Get all rights
-    *
-    * @param type $all
-    *
-    * @return array
-    */
-   static function getAllRights($all = false) {
+    public static function translateARight($old_right)
+    {
+        switch ($old_right) {
+            case '':
+                return 0;
+            case 'r':
+                return READ;
+            case 'w':
+                return ALLSTANDARDRIGHT;
+            case '0':
+            case '1':
+                return $old_right;
 
-      $rights = [
-         ['itemtype' => 'PluginVipGroup',
-               'label'    => __('VIP', 'vip'),
-               'field'    => 'plugin_vip'
-         ]
-      ];
-
-      return $rights;
-   }
-
-   /**
-    * Init profiles
-    *
-    **/
-
-   static function translateARight($old_right) {
-      switch ($old_right) {
-         case '':
-            return 0;
-         case 'r' :
-            return READ;
-         case 'w':
-            return ALLSTANDARDRIGHT;
-         case '0':
-         case '1':
-            return $old_right;
-
-         default :
-            return 0;
-      }
-   }
+            default:
+                return 0;
+        }
+    }
 
 
-   /**
-    * @since 0.85
-    * Migration rights from old system to the new one for one profile
-    *
-    * @param $profiles_id the profile ID
-    */
-   static function migrateOneProfile($profiles_id) {
-      global $DB;
-      //Cannot launch migration if there's nothing to migrate...
-      if (!$DB->tableExists('glpi_plugin_vip_profiles')) {
-         return true;
-      }
+    /**
+     * @since 0.85
+     * Migration rights from old system to the new one for one profile
+     *
+     * @param $profiles_id the profile ID
+     */
+    public static function migrateOneProfile($profiles_id)
+    {
+        global $DB;
+        //Cannot launch migration if there's nothing to migrate...
+        if (!$DB->tableExists('glpi_plugin_vip_profiles')) {
+            return true;
+        }
 
-      foreach ($DB->request('glpi_plugin_vip_profiles',
-                            "`profiles_id`='$profiles_id'") as $profile_data) {
+        foreach ($DB->request(
+            'glpi_plugin_vip_profiles',
+            "`profiles_id`='$profiles_id'"
+        ) as $profile_data) {
+            $matching       = ['show_vip_tab' => 'plugin_vip'];
+            $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
+            foreach ($matching as $old => $new) {
+                if (!isset($current_rights[$old])) {
+                    $right = self::translateARight($profile_data[$old]);
+                    switch ($new) {
+                        case 'plugin_vip':
+                            $right = 0;
+                            if ($profile_data[$old] == '1') {
+                                $right = ALLSTANDARDRIGHT;
+                            }
+                            break;
+                    }
 
-         $matching       = ['show_vip_tab' => 'plugin_vip'];
-         $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
-         foreach ($matching as $old => $new) {
-            if (!isset($current_rights[$old])) {
-               $right = self::translateARight($profile_data[$old]);
-               switch ($new) {
-                  case 'plugin_vip' :
-                     $right = 0;
-                     if ($profile_data[$old] == '1') {
-                        $right = ALLSTANDARDRIGHT;
-                     }
-                     break;
-               }
-
-               $query = "UPDATE `glpi_profilerights` 
+                    $query = "UPDATE `glpi_profilerights` 
                          SET `rights`='" . $right . "' 
                          WHERE `name`='$new' AND `profiles_id`='$profiles_id'";
-               $DB->query($query);
+                    $DB->query($query);
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
-   /**
-    * Initialize profiles, and migrate it necessary
-    */
-   static function initProfile() {
-      global $DB;
-      $profile = new self();
-      $dbu = new DbUtils();
-      //Add new rights in glpi_profilerights table
-      foreach ($profile->getAllRights(true) as $data) {
-         if ($dbu->countElementsInTable("glpi_profilerights",
-                                  ["name" => $data['field']]) == 0) {
-            ProfileRight::addProfileRights([$data['field']]);
-         }
-      }
+    /**
+     * Initialize profiles, and migrate it necessary
+     */
+    public static function initProfile()
+    {
+        global $DB;
+        $profile = new self();
+        $dbu = new DbUtils();
+        //Add new rights in glpi_profilerights table
+        foreach ($profile->getAllRights(true) as $data) {
+            if ($dbu->countElementsInTable(
+                "glpi_profilerights",
+                ["name" => $data['field']]
+            ) == 0) {
+                ProfileRight::addProfileRights([$data['field']]);
+            }
+        }
 
-      //Migration old rights in new ones
-      foreach ($DB->request("SELECT `id` FROM `glpi_profiles`") as $prof) {
-         self::migrateOneProfile($prof['id']);
-      }
-      foreach ($DB->request("SELECT *
+        //Migration old rights in new ones
+        foreach ($DB->request("SELECT `id` FROM `glpi_profiles`") as $prof) {
+            self::migrateOneProfile($prof['id']);
+        }
+        foreach ($DB->request("SELECT *
                            FROM `glpi_profilerights` 
                            WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
                               AND `name` LIKE '%plugin_vip%'") as $prof) {
-         $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
-      }
-   }
+            if (isset($_SESSION['glpiactiveprofile'])) {
+                $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
+            }
+        }
+    }
 
-   /**
-    * Initialize profiles, and migrate it necessary
-    */
-   static function changeProfile() {
-      global $DB;
+    /**
+     * Initialize profiles, and migrate it necessary
+     */
+    public static function changeProfile()
+    {
+        global $DB;
 
-      foreach ($DB->request("SELECT *
+        foreach ($DB->request("SELECT *
                            FROM `glpi_profilerights` 
                            WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
                               AND `name` LIKE '%plugin_vip%'") as $prof) {
-         $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
-      }
+            $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
+        }
+    }
 
-   }
+    public static function createFirstAccess($profiles_id)
+    {
+        $rights = ['plugin_vip' => ALLSTANDARDRIGHT];
 
-   static function createFirstAccess($profiles_id) {
+        self::addDefaultProfileInfos(
+            $profiles_id,
+            $rights,
+            true
+        );
+    }
 
-      $rights = ['plugin_vip' => ALLSTANDARDRIGHT];
+    /**
+     * @param $profile
+     **/
+    public static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false)
+    {
+        $profileRight = new ProfileRight();
+        $dbu = new DbUtils();
+        foreach ($rights as $right => $value) {
+            if ($dbu->countElementsInTable(
+                'glpi_profilerights',
+                ["profiles_id" => $profiles_id,
+                 "name"        => $right]
+            ) && $drop_existing) {
+                $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
+            }
+            if (!$dbu->countElementsInTable(
+                'glpi_profilerights',
+                ["profiles_id" => $profiles_id,
+                 "name"        => $right]
+            )) {
+                $myright['profiles_id'] = $profiles_id;
+                $myright['name']        = $right;
+                $myright['rights']      = $value;
+                $profileRight->add($myright);
 
-      self::addDefaultProfileInfos($profiles_id,
-                                   $rights, true);
+                //Add right to the current session
+                $_SESSION['glpiactiveprofile'][$right] = $value;
+            }
+        }
+    }
 
-   }
-
-   /**
-    * @param $profile
-    **/
-   static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false) {
-
-      $profileRight = new ProfileRight();
-      $dbu = new DbUtils();
-      foreach ($rights as $right => $value) {
-         if ($dbu->countElementsInTable('glpi_profilerights',
-                                  ["profiles_id" => $profiles_id,
-                                   "name"        => $right]) && $drop_existing) {
-            $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
-         }
-         if (!$dbu->countElementsInTable('glpi_profilerights',
-                                   ["profiles_id" => $profiles_id,
-                                    "name"        => $right])) {
-            $myright['profiles_id'] = $profiles_id;
-            $myright['name']        = $right;
-            $myright['rights']      = $value;
-            $profileRight->add($myright);
-
-            //Add right to the current session
-            $_SESSION['glpiactiveprofile'][$right] = $value;
-         }
-      }
-   }
-
-   static function removeRightsFromSession() {
-      foreach (self::getAllRights(true) as $right) {
-         if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
-            unset($_SESSION['glpiactiveprofile'][$right['field']]);
-         }
-      }
-   }
-
+    public static function removeRightsFromSession()
+    {
+        foreach (self::getAllRights(true) as $right) {
+            if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
+                unset($_SESSION['glpiactiveprofile'][$right['field']]);
+            }
+        }
+    }
 }
