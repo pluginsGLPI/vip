@@ -76,8 +76,9 @@ function plugin_vip_uninstall() {
                    "glpi_notepads",
                    "glpi_dropdowntranslations"];
 
-   foreach ($tables_glpi as $table_glpi)
-      $DB->query("DELETE FROM `$table_glpi` WHERE `itemtype` LIKE 'PluginVip%';");
+   foreach ($tables_glpi as $table_glpi) {
+      $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginVip%']]);
+   }
 
    //drop rules
    $Rule    = new Rule();

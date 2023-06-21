@@ -86,7 +86,11 @@ class PluginVipVip extends CommonDBTM {
          if (isset($fields['groups_id'])) {
             $groupuser = new Group_User();
 
-            if (!$groupuser->find(["`users_id` = " . $user->getID() . " AND `groups_id` =" . $fields['groups_id']])) {
+            $result = $groupuser->find([
+               'users_id' => $user->getID(),
+               'groups_id' => $fields['groups_id']
+            ]);
+            if (!$result) {
                $groupuser->add(['users_id'  => $user->getID(),
                                      'groups_id' => $fields['groups_id']]);
             }
@@ -133,7 +137,11 @@ class PluginVipVip extends CommonDBTM {
          if (isset($fields['groups_id'])) {
             $groupuser = new Group_User();
 
-            if (!$groupuser->find(["`users_id` = " . $user->getID() . " AND `groups_id` =" . $fields['groups_id']])) {
+            $result = $groupuser->find([
+               'users_id' => $user->getID(),
+               'groups_id' => $fields['groups_id']
+            ]);
+            if (!$result) {
                $groupuser->add(['users_id'  => $user->getID(),
                                      'groups_id' => $fields['groups_id']]);
             }
