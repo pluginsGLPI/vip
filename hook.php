@@ -245,6 +245,9 @@ function plugin_vip_executeActions($options) {
 }
 
 function plugin_vip_redefine_api_schemas(array $data): array {
+    if (!Session::haveRight('plugin_vip', READ)) {
+        return $data;
+    }
     foreach ($data['schemas'] as &$schema) {
         if (!isset($schema['x-itemtype'])) {
             continue;
