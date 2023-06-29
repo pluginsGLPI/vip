@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Plugin\Hooks;
+
 define('PLUGIN_VIP_VERSION', '1.8.2');
 
 if (!defined("PLUGIN_VIP_DIR")) {
@@ -83,6 +85,8 @@ function plugin_init_vip() {
    Plugin::registerClass('PluginVipRuleVipCollection', [
        'rulecollections_types' => true
    ]);
+   // Cannot be placed inside any permission check as the plugin is initialized before the API router authenticates the user
+   $PLUGIN_HOOKS[Hooks::REDEFINE_API_SCHEMAS]['vip'] = 'plugin_vip_redefine_api_schemas';
 }
 
 function plugin_version_vip() {

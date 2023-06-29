@@ -243,3 +243,54 @@ function plugin_vip_executeActions($options) {
    $vip = new PluginVipRuleVip();
    return $vip->executeActions($options['action'], $options['output'], $options['params']);
 }
+
+function plugin_vip_redefine_api_schemas(array $data): array {
+    foreach ($data['schemas'] as &$schema) {
+        if (!isset($schema['x-itemtype'])) {
+            continue;
+        }
+        switch ($schema['x-itemtype']) {
+            case 'User':
+                $schema['properties']['vip_groups'] = [
+                    'type' => \Glpi\Api\HL\Doc\Schema::TYPE_ARRAY,
+                    'items' => [
+                        'type' => \Glpi\Api\HL\Doc\Schema::TYPE_OBJECT,
+                        'x-join' => [
+                            // This is the join with the desired data
+                            'table' => 'glpi_plugin_vip_groups',
+                            'fkey' => 'groups_id',
+                            'field' => 'id', // This table uses the group ID as the primary key "id"
+                            'ref_join' => [
+                                // This is the linking join between the main item and the data needed
+                                'table' => 'glpi_groups_users',
+                                'fkey' => 'id',
+                                'field' => 'users_id',
+                            ]
+                        ],
+                        'properties' => [
+                            'id' => [
+                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_INTEGER,
+                                'x-readonly' => true,
+                            ],
+                            'name' => [
+                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_STRING,
+                                'x-readonly' => true,
+                            ],
+                            'color' => [
+                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_STRING,
+                                'x-readonly' => true,
+                                'x-field' => 'vip_color'
+                            ],
+                            'icon' => [
+                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_STRING,
+                                'x-readonly' => true,
+                                'x-field' => 'vip_icon'
+                            ],
+                        ]
+                    ]
+                ];
+                break;
+        }
+    }
+    return $data;
+}
