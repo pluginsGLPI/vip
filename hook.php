@@ -263,7 +263,7 @@ function plugin_vip_redefine_api_schemas(array $data): array {
                             'table' => 'glpi_plugin_vip_groups',
                             'fkey' => 'groups_id',
                             'field' => 'id', // This table uses the group ID as the primary key "id"
-                            'ref_join' => [
+                            'ref-join' => [
                                 // This is the linking join between the main item and the data needed
                                 'table' => 'glpi_groups_users',
                                 'fkey' => 'id',
