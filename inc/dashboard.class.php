@@ -72,21 +72,41 @@ class PluginVipDashboard extends CommonGLPI
                     $groups[] = $mygroup["id"];
                 }
 
-                $query = "SELECT  `glpi_tickets`.`id` AS tickets_id, 
-                                 `glpi_tickets`.`status` AS status, 
-                                 `glpi_tickets`.`time_to_resolve` AS time_to_resolve
-                        FROM `glpi_tickets`
-                        LEFT JOIN `glpi_entities` ON (`glpi_tickets`.`entities_id` = `glpi_entities`.`id`)
-                        LEFT JOIN `glpi_groups_tickets` ON (`glpi_tickets`.`id` = `glpi_groups_tickets`.`tickets_id` 
-                                                            AND `glpi_groups_tickets`.`type` = " . CommonITILActor::ASSIGN . ")
-                        WHERE `glpi_tickets`.`is_deleted` = '0' 
-                              AND `glpi_tickets`.`status` NOT IN (" . CommonITILObject::INCOMING . "," . CommonITILObject::SOLVED . "," . CommonITILObject::CLOSED . ") ";
+                $criteria = [
+                    'SELECT' => [
+                        'glpi_tickets.id AS tickets_id', 'glpi_tickets.status AS status', 'glpi_tickets.time_to_resolve AS time_to_resolve'
+                    ],
+                    'FROM' => 'glpi_tickets',
+                    'LEFT JOIN' => [
+                        'glpi_entities' => [
+                            'ON' => [
+                                'glpi_tickets' => 'entities_id',
+                                'glpi_entities' => 'id'
+                            ]
+                        ],
+                        'glpi_groups_tickets' => [
+                            'ON' => [
+                                'glpi_tickets' => 'id',
+                                'glpi_groups_tickets' => 'tickets_id', [
+                                    'AND' => [
+                                        'glpi_groups_tickets.type' => CommonITILActor::ASSIGN
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    'WHERE' => [
+                        'glpi_tickets.is_deleted' => '0',
+                        'NOT' => ['glpi_tickets.status' => [CommonITILObject::INCOMING, CommonITILObject::SOLVED, CommonITILObject::CLOSED]]
+                    ],
+                    'ORDER' => ['glpi_tickets.time_to_resolve' => 'DESC']
+                ];
                 if (count($groups) > 0) {
-                    $query .= "AND `glpi_groups_tickets`.`groups_id` IN (" . implode(",", $groups) . ")";
+                    $criteria['WHERE']['glpi_groups_tickets.groups_id'] = $groups;
                 }
-                $query .= "ORDER BY `glpi_tickets`.`time_to_resolve` DESC";//
-
-                $widget  = PluginMydashboardHelper::getWidgetsFromDBQuery('table', $query);
+                $it = new DBmysqlIterator($DB);
+                $it->buildQuery($criteria);
+                $widget  = PluginMydashboardHelper::getWidgetsFromDBQuery('table', $it->getSql());
                 $headers = [__('ID'),
                             _n('Requester', 'Requesters', 2),
                             __('Status'),
@@ -94,14 +114,14 @@ class PluginVipDashboard extends CommonGLPI
                             __('Assigned to technicians')];
                 $widget->setTabNames($headers);
 
-                $result = $DB->query($query);
-                $nb     = $DB->numrows($result);
+                $result = $DB->request($criteria);
+                $nb     = count($result);
 
                 $datas   = [];
                 $tickets = [];
 
                 if ($nb) {
-                    while ($data = $DB->fetchAssoc($result)) {
+                    foreach ($result as $data) {
                         $ticket = new Ticket();
                         $ticket->getFromDB($data['tickets_id']);
                         if ($ticket->countUsers(CommonITILActor::REQUESTER)) {

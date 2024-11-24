@@ -45,19 +45,24 @@ class PluginVipTicket extends CommonDBTM
         global $DB;
 
         if ($uid) {
-            $vipquery = "SELECT `glpi_plugin_vip_groups`.`id`
-                   FROM `glpi_groups_users`
-                   LEFT JOIN `glpi_plugin_vip_groups`
-                     ON `glpi_plugin_vip_groups`.`id` = `glpi_groups_users`.`groups_id`
-                   WHERE `glpi_plugin_vip_groups`.`isvip` = 1
-                   AND `glpi_groups_users`.`users_id` = " . $uid;
-
-            $result = $DB->query($vipquery);
-            $nb     = $DB->numrows($result);
-            if ($nb > 0) {
-                while ($uids = $DB->fetchArray($result)) {
-                    return $uids['id'];
-                }
+            $result = $DB->request([
+                'SELECT' => ['glpi_plugin_vip_groups.id'],
+                'FROM' => 'glpi_groups_users',
+                'LEFT JOIN' => [
+                    'glpi_plugin_vip_groups' => [
+                        'ON' => [
+                            'glpi_plugin_vip_groups' => 'id',
+                            'glpi_groups_users' => 'groups_id'
+                        ]
+                    ]
+                ],
+                'WHERE' => [
+                    'glpi_plugin_vip_groups.isvip' => 1,
+                    'glpi_groups_users.users_id' => $uid
+                ]
+            ]);
+            if (count($result) > 0) {
+                return $result->current()['id'];
             }
         }
 
@@ -73,17 +78,25 @@ class PluginVipTicket extends CommonDBTM
     {
         global $DB;
 
-        $vip      = [];
-        $vipquery = "SELECT `glpi_groups_users`.`users_id`
-                   FROM `glpi_groups_users`
-                   LEFT JOIN `glpi_plugin_vip_groups`
-                     ON `glpi_plugin_vip_groups`.`id` = `glpi_groups_users`.`groups_id`
-                   WHERE `glpi_plugin_vip_groups`.`isvip` = 1";
+        $vip = [];
 
-        $result = $DB->query($vipquery);
-        $nb     = $DB->numrows($result);
-        if ($nb > 0) {
-            while ($uids = $DB->fetchArray($result)) {
+        $result = $DB->request([
+            'SELECT' => ['glpi_groups_users.users_id'],
+            'FROM' => 'glpi_groups_users',
+            'LEFT JOIN' => [
+                'glpi_plugin_vip_groups' => [
+                    'ON' => [
+                        'glpi_plugin_vip_groups' => 'id',
+                        'glpi_groups_users' => 'groups_id'
+                    ]
+                ]
+            ],
+            'WHERE' => [
+                'glpi_plugin_vip_groups.isvip' => 1
+            ]
+        ]);
+        if (count($result) > 0) {
+            foreach ($result as $uids) {
                 $vip[] = $uids['users_id'];
             }
         }
@@ -100,14 +113,16 @@ class PluginVipTicket extends CommonDBTM
         global $DB;
 
         if ($ticketid > 0) {
-            $userquery  = "SELECT `users_id`
-                        FROM `glpi_tickets_users`
-                        WHERE `type` = " . CommonITILActor::REQUESTER . "
-                        AND `tickets_id` = " . $ticketid;
-            $userresult = $DB->query($userquery);
-            $nb     = $DB->numrows($userresult);
-            if ($nb > 0) {
-                while ($uids = $DB->fetchArray($userresult)) {
+            $userresult = $DB->request([
+                'SELECT' => ['users_id'],
+                'FROM' => 'glpi_tickets_users',
+                'WHERE' => [
+                    'type' => CommonITILActor::REQUESTER,
+                    'tickets_id' => $ticketid
+                ]
+            ]);
+            if (count($userresult) > 0) {
+                foreach ($userresult as $uids) {
                     $isuservip = self::isUserVip($uids['users_id']);
                     if ($isuservip > 0) {
                         return $isuservip;
