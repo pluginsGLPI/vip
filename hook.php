@@ -124,7 +124,7 @@ function plugin_vip_getAddSearchOptions($itemtype) {
             $sopt[$rng1]['massiveaction'] = false;
             break;
          case 'Group':
-            $rng1                         = 150;
+            $rng1                         = 10150;
             $sopt[$rng1]['table']         = 'glpi_plugin_vip_groups';
             $sopt[$rng1]['field']         = 'isvip';
             $sopt[$rng1]['linkfield']     = 'id';

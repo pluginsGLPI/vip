@@ -35,83 +35,105 @@ Session::checkLoginUser();
 //Html::header_nocache();
 
 switch ($_POST['action']) {
-   case 'getTicket':
-      header('Content-Type: application/json; charset=UTF-8"');
+    case 'getTicket':
+        header('Content-Type: application/json; charset=UTF-8"');
 
-      $params = ['entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(array_values($_SESSION['glpiactiveentities'])) : $_SESSION['glpiactiveentities']),
-                 'used'        => []];
+        $params = [
+            'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
+                array_values($_SESSION['glpiactiveentities'])
+            ) : $_SESSION['glpiactiveentities']),
+            'used' => []
+        ];
 
-      if (isset($_POST['items_id'])) {
-         $ticket = new Ticket();
-         $actor  = new Ticket_User();
-         if($ticket->getFromDB($_POST['items_id'])) {
-            $actors = $actor->getActors($_POST['items_id']);
+        if (isset($_POST['items_id'])) {
+            $ticket = new Ticket();
+            $actor = new Ticket_User();
+            if ($ticket->getFromDB($_POST['items_id'])) {
+                $actors = $actor->getActors($_POST['items_id']);
+
+                $used = [];
+                if (isset($actors[CommonITILActor::REQUESTER])) {
+                    foreach ($actors[CommonITILActor::REQUESTER] as $requesters) {
+                        $used[] = $requesters['users_id'];
+                    }
+                }
+
+                $params = [
+                    'used' => $used,
+                    'entities_id' => $ticket->fields['entities_id']
+                ];
+            }
+        }
+
+        echo json_encode($params);
+        break;
+    case 'getVIP':
+        header('Content-Type: application/json; charset=UTF-8"');
+
+        $params = [
+            'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
+                array_values($_SESSION['glpiactiveentities'])
+            ) : $_SESSION['glpiactiveentities']),
+            'used' => []
+        ];
+
+        $used = PluginVipTicket::getUserVipList($params['entities_id']);
+        $used = array_unique($used);
+        if (count($used) > 0) {
+            $params = ['used' => $used];
+        }
+
+        echo json_encode($params);
+        break;
+    case 'getPrinter':
+        header('Content-Type: application/json; charset=UTF-8"');
+
+        $params = [
+            'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
+                array_values($_SESSION['glpiactiveentities'])
+            ) : $_SESSION['glpiactiveentities']),
+            'used' => []
+        ];
+
+        if (isset($_POST['items_id'])) {
+            $printer = new Printer();
+            $printer->getFromDB($_POST['items_id']);
 
             $used = [];
-            if (isset($actors[CommonITILActor::REQUESTER])) {
-               foreach ($actors[CommonITILActor::REQUESTER] as $requesters) {
-                  $used[] = $requesters['users_id'];
-               }
-            }
-
-            $params = ['used'        => $used,
-                       'entities_id' => $ticket->fields['entities_id']];
-         }
-      }
-
-      echo json_encode($params);
-      break;
-   case 'getVIP':
-      header('Content-Type: application/json; charset=UTF-8"');
-
-      $params = ['entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(array_values($_SESSION['glpiactiveentities'])) : $_SESSION['glpiactiveentities']),
-                 'used'        => []];
-
-      $used = PluginVipTicket::getUserVipList($params['entities_id']);
-
-      if (count($used) > 0) {
-         $params = ['used' => $used];
-      }
-
-      echo json_encode($params);
-      break;
-   case 'getPrinter':
-      header('Content-Type: application/json; charset=UTF-8"');
-
-      $params = ['entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(array_values($_SESSION['glpiactiveentities'])) : $_SESSION['glpiactiveentities']),
-                 'used'        => []];
-
-      if (isset($_POST['items_id'])) {
-         $printer = new Printer();
-         $printer->getFromDB($_POST['items_id']);
-
-         $used   = [];
-         $used[] = $printer->fields['users_id'];
+            $used[] = $printer->fields['users_id'];
 
 
-         $params = ['used'        => $used,
-                    'entities_id' => $printer->fields['entities_id']];
-      }
+            $params = [
+                'used' => $used,
+                'entities_id' => $printer->fields['entities_id']
+            ];
+        }
 
-      echo json_encode($params);
-      break;
-   case 'getComputer':
-      header('Content-Type: application/json; charset=UTF-8"');
+        echo json_encode($params);
+        break;
+    case 'getComputer':
+        header('Content-Type: application/json; charset=UTF-8"');
 
-      $params = ['entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(array_values($_SESSION['glpiactiveentities'])) : $_SESSION['glpiactiveentities']),
-                 'used'        => []];
+        $params = [
+            'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
+                array_values($_SESSION['glpiactiveentities'])
+            ) : $_SESSION['glpiactiveentities']),
+            'used' => []
+        ];
 
-      if (isset($_POST['items_id'])) {
-         $computer = new Computer();
-         $computer->getFromDB($_POST['items_id']);
+        if (isset($_POST['items_id'])) {
+            $computer = new Computer();
+            $computer->getFromDB($_POST['items_id']);
 
-         $used   = [];
-         $used[] = $computer->fields['users_id'];
+            $used = [];
+            $used[] = $computer->fields['users_id'];
 
 
-         $params = ['used'        => $used,
-                    'entities_id' => $computer->fields['entities_id']];
-      }
-      echo json_encode($params);
-      break;
+            $params = [
+                'used' => $used,
+                'entities_id' => $computer->fields['entities_id']
+            ];
+        }
+        echo json_encode($params);
+        break;
 }
