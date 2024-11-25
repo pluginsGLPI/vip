@@ -38,7 +38,7 @@ function plugin_vip_install() {
       $tables = ["glpi_plugin_vip_tickets"];
 
       foreach ($tables as $table) {
-         $DB->query("DROP TABLE IF EXISTS `$table`;");
+         $DB->dropTable($table);
       }
    }
 
@@ -65,7 +65,7 @@ function plugin_vip_uninstall() {
               "glpi_plugin_vip_tickets"];
 
    foreach ($tables as $table)
-      $DB->query("DROP TABLE IF EXISTS `$table`;");
+      $DB->dropTable($table);
 
    $tables_glpi = ["glpi_displaypreferences",
                    "glpi_documents_items",
