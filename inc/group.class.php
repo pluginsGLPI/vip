@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\RichText\RichText;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -262,6 +264,19 @@ JAVASCRIPT
         Dropdown::showYesNo('isvip');
         echo "<br><br>" . Html::submit(_x('button', 'Save'), ['name' => 'massiveaction']);
         return true;
+    }
+
+    public function prepareInputForAdd($input)
+    {
+        return $this->prepareInputForUpdate($input);
+    }
+
+    public function prepareInputForUpdate($input)
+    {
+        if (isset($input['vip_icon']) && $input['vip_icon']) {
+            $input['vip_icon'] = strip_tags(RichText::getTextFromHtml($input['vip_icon']));
+        }
+        return $input;
     }
 
     /**
