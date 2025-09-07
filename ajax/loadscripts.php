@@ -27,26 +27,25 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
-
 Html::header_nocache();
 Session::checkLoginUser();
 header("Content-Type: text/html; charset=UTF-8");
 
+global $CFG_GLPI;
 switch ($_POST['action']) {
-   case "load" :
-      $vip_group = new PluginVipGroup();
-      $vip       = $vip_group->getVipUsers();
+    case "load":
+        $vip_group = new PluginVipGroup();
+        $vip       = $vip_group->getVipUsers();
 
-      $params                            = [];
-      $params['page_limit']              = $CFG_GLPI['dropdown_max'];
-      $params['root_doc']                = $CFG_GLPI['root_doc'];
-      $params['minimumResultsForSearch'] = $CFG_GLPI['ajax_limit_count'];
-      $params['emptyValue']              = Dropdown::EMPTY_VALUE;
+        $params                            = [];
+        $params['page_limit']              = $CFG_GLPI['dropdown_max'];
+        $params['root_doc']                = $CFG_GLPI['root_doc'];
+        $params['minimumResultsForSearch'] = $CFG_GLPI['ajax_limit_count'];
+        $params['emptyValue']              = Dropdown::EMPTY_VALUE;
 
-      echo "<script type='text/javascript'>";
-      echo "var viptest = $(document).initVipPlugin(" . json_encode($params) . ");";
-      echo "viptest.changeRequesterColor(" . json_encode($vip) . ");";
-      echo "</script>";
-      break;
+        echo "<script type='text/javascript'>";
+        echo "var viptest = $(document).initVipPlugin(" . json_encode($params) . ");";
+        echo "viptest.changeRequesterColor(" . json_encode($vip) . ");";
+        echo "</script>";
+        break;
 }

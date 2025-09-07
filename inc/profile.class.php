@@ -38,6 +38,11 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginVipProfile extends Profile
 {
+
+    public static function getIcon()
+    {
+        return "ti ti-vip";
+    }
     /**
      * Get tab name for item
      *
@@ -50,7 +55,7 @@ class PluginVipProfile extends Profile
     {
         if ($item->getType() == 'Profile'
             && $item->getField('interface') != 'helpdesk') {
-            return __('VIP', 'vip');
+            return self::createTabEntry(PluginVipVip::getTypeName());
         }
         return '';
     }
@@ -148,8 +153,6 @@ class PluginVipProfile extends Profile
     public static function translateARight($old_right)
     {
         switch ($old_right) {
-            case '':
-                return 0;
             case 'r':
                 return READ;
             case 'w':

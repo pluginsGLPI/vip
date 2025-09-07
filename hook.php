@@ -182,7 +182,7 @@ function plugin_vip_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$alr
 function plugin_vip_giveItem($type, $ID, $data, $num) {
    global $CFG_GLPI, $DB;
 
-   $searchopt = &Search::getOptions($type);
+   $searchopt = Search::getOptions($type);
    $table     = $searchopt[$ID]["table"];
    $field     = $searchopt[$ID]["field"];
    switch ($type) {
@@ -193,7 +193,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num) {
                   $name = PluginVipGroup::getVipName($id);
                   $color = PluginVipGroup::getVipColor($id);
                   $icon = PluginVipGroup::getVipIcon($id);
-                  return "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:$color'></i><p style='display:none'>1</p>";
+                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
                }
                break;
          }
@@ -205,7 +205,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num) {
                   $name = PluginVipGroup::getVipName($id);
                   $color = PluginVipGroup::getVipColor($id);
                   $icon = PluginVipGroup::getVipIcon($id);
-                  return "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:$color'></i><p style='display:none'>1</p>";
+                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
                }
                break;
          }
@@ -217,7 +217,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num) {
                   $name = PluginVipGroup::getVipName($id);
                   $color = PluginVipGroup::getVipColor($id);
                   $icon = PluginVipGroup::getVipIcon($id);
-                  return "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:$color'></i><p style='display:none'>1</p>";
+                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
                }
                break;
          }
@@ -229,7 +229,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num) {
                   $name = PluginVipGroup::getVipName($data["id"]);
                   $color = PluginVipGroup::getVipColor($data["id"]);
                   $icon = PluginVipGroup::getVipIcon($data["id"]);
-                  return "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:$color'></i><p style='display:none'>1</p>";
+                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
                }
                break;
          }

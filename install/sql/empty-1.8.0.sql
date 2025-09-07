@@ -6,7 +6,7 @@ CREATE TABLE `glpi_plugin_vip_groups` (
   `name` varchar(100) DEFAULT 'VIP',
   `isvip` tinyint default '0',
   `vip_color` varchar(10) DEFAULT '#ff0000' NOT NULL,
-  `vip_icon` varchar(100) DEFAULT 'fa-exclamation-triangle',
+  `vip_icon` varchar(100) DEFAULT 'ti-vip',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 

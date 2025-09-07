@@ -1,6 +1,6 @@
 <?php
 use Glpi\Event;
-include('../../inc/includes.php');
+include('../../../../inc/includes.php');
 header('Content-Type: text/javascript');
 
 ?>
@@ -15,7 +15,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
         // Start the plugin
         function init() {
-            object.params = new Array();
+            object.params = [];
             object.params['entities_id'] = 0;
             object.params['page_limit'] = 0;
             object.params['minimumResultsForSearch'] = 0;
@@ -32,6 +32,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
         }
 
         this.changeRequesterColor = function (vip) {
+
             $(document).ready(function () {
 
                 // only in ticket form
@@ -50,10 +51,10 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                     $(document).ajaxComplete(function (event, xhr, option) {
 
                         if (option.url !== undefined
-                            && (option.url.indexOf('vip/ajax/loadscripts.php') > 0 || option.url.indexOf('common.tabs.php') > 0)) {
-
+                            && (option.url.indexOf('vip/ajax/loadscripts.php') > 0
+                                || option.url.indexOf('common.tabs.php') > 0)
+                                    || option.url.indexOf('ajax/comments.php') > 0) {
                             setTimeout(function () {
-
                                 if (items_id > 0) {
                                     $.ajax({
                                         url: root_vip_doc + '/ajax/ticket.php',
@@ -73,9 +74,10 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                                     ) {
                                                         var userid = val.id;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
-                                                        $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='fas " + val.icon + "' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
+                                                        $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
                                                     }
                                                 });
+                                                return false;
                                             });
                                         },
                                     });
@@ -97,9 +99,10 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                                     ) {
                                                         var userid = val.id;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
-                                                        $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='fas " + val.icon + "' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
+                                                        $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
                                                     }
                                                 });
+                                                //return false;
                                             });
                                         },
                                     });
@@ -146,7 +149,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
                                             });
                                             // $("span[id^='select2-dropdown_users_id']").css("color", val.color);
-                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='fas " + val.icon + " fa-2x' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
+                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-size:2em;color:" + val.color + "'></i>&nbsp;");
                                         }
                                     });
                                 });
@@ -191,7 +194,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
                                             });
                                             // $("span[id^='select2-dropdown_users_id']").css("color", val.color);
-                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='fas " + val.icon + " fa-2x' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
+                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-size:2em;color:" + val.color + "'></i>&nbsp;");
                                         }
                                     });
                                 });

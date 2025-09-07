@@ -34,7 +34,7 @@
  * @brief
  * @since version 0.85
  */
-
+global $DB, $CFG_GLPI;
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'], "getDropdownUsers.php")) {
    $AJAX_INCLUDE = 1;

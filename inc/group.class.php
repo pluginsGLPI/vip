@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -35,6 +36,10 @@ class PluginVipGroup extends CommonDBTM
 {
     public static $rightname = "plugin_vip";
 
+    public static function getIcon()
+    {
+        return "ti ti-vip";
+    }
     /**
      * Configuration form
      * */
@@ -89,22 +94,24 @@ class PluginVipGroup extends CommonDBTM
             'vip_icon',
             [$this->fields['vip_icon'] => $this->fields['vip_icon']],
             [
-               'id'       => $icon_selector_id,
-               'selected' => $this->fields['vip_icon'],
-               'style'    => 'width:175px;'
+                'id' => $icon_selector_id,
+                'selected' => $this->fields['vip_icon'],
+                'style' => 'width:175px;',
             ]
         );
 
-        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::script('js/modules/Form/WebIconSelector.js');
         echo Html::scriptBlock(
             <<<JAVASCRIPT
          $(
             function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+            import('/js/modules/Form/WebIconSelector.js').then((m) => {
+               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
                icon_selector.init();
+               });
             }
          );
-JAVASCRIPT
+        JAVASCRIPT
         );
 
         echo "</td>";
@@ -139,7 +146,7 @@ JAVASCRIPT
     {
         if ($item->getType() == 'Group'
             && Session::haveRight("plugin_vip", UPDATE)) {
-            return __('VIP', 'vip');
+            return self::createTabEntry(PluginVipVip::getTypeName());
         }
         return '';
     }
@@ -222,7 +229,7 @@ JAVASCRIPT
         if ($grp->getFromDB($id)) {
             return $grp->fields["vip_icon"];
         }
-        return "fa-exclamation-triangle";
+        return "ti-vip";
     }
 
     /**
@@ -273,8 +280,7 @@ JAVASCRIPT
         MassiveAction $ma,
         CommonDBTM $item,
         array         $ids
-    )
-    {
+    ) {
         $vip = new self();
         //We check if it's really a massive action of vip
         if (strpos($ma->getAction(), "plugin_vip_update") == -1) {
@@ -286,14 +292,14 @@ JAVASCRIPT
                     //Item has alreaddy
                     if ($vip->getFromDB($id)) {
                         $update = [
-                           "id"    => $id,
-                           "isvip" => $input['isvip']
+                            "id"    => $id,
+                            "isvip" => $input['isvip'],
                         ];
                         $vip->update($update);
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
                     } else { //Item has no vip yet
                         $update = [
-                           "isvip" => $input['isvip']
+                            "isvip" => $input['isvip'],
                         ];
                         $vip->add($update);
                         $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);

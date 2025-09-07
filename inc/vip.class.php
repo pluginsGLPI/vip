@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -48,6 +49,11 @@ class PluginVipVip extends CommonDBTM
         return __('VIP', 'vip');
     }
 
+    public static function getIcon()
+    {
+        return "ti ti-vip";
+    }
+
     public static function afterAdd(User $user)
     {
         $rulevip   = new PluginVipRuleVip();
@@ -88,11 +94,11 @@ class PluginVipVip extends CommonDBTM
 
                 $result = $groupuser->find([
                     'users_id' => $user->getID(),
-                    'groups_id' => $fields['groups_id']
+                    'groups_id' => $fields['groups_id'],
                 ]);
                 if (!$result) {
                     $groupuser->add(['users_id'  => $user->getID(),
-                                          'groups_id' => $fields['groups_id']]);
+                        'groups_id' => $fields['groups_id']]);
                 }
             }
         }
@@ -138,11 +144,11 @@ class PluginVipVip extends CommonDBTM
 
                 $result = $groupuser->find([
                     'users_id' => $user->getID(),
-                    'groups_id' => $fields['groups_id']
+                    'groups_id' => $fields['groups_id'],
                 ]);
                 if (!$result) {
                     $groupuser->add(['users_id'  => $user->getID(),
-                                          'groups_id' => $fields['groups_id']]);
+                        'groups_id' => $fields['groups_id']]);
                 }
             }
         }

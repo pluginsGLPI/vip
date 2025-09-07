@@ -173,7 +173,7 @@ class PluginVipTicket extends CommonDBTM
                     $icon = PluginVipGroup::getVipIcon($id);
                     $color = PluginVipGroup::getVipColor($id);
                     echo "<div class='alert alert-important alert-warning center' style='background-color: $color'>";
-                    echo "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";'></i>&nbsp;";
+                    echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
                     echo sprintf(__('%1$s %2$s'), __('This ticket concerns at least one', 'vip'), $name);
                     echo "</div>";
                 }
@@ -184,12 +184,12 @@ class PluginVipTicket extends CommonDBTM
                     if ($item->getType() == 'Computer') {
                         $name = PluginVipGroup::getVipName($id);
                         $icon = PluginVipGroup::getVipIcon($id);
-                        echo "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";'></i>&nbsp;";
+                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
                         echo sprintf(__('%1$s %2$s'), __('This computer is used by a', 'vip'), $name);
                     } elseif ($item->getType() == 'Printer') {
                         $name = PluginVipGroup::getVipName($id);
                         $icon = PluginVipGroup::getVipIcon($id);
-                        echo "<i class='fas $icon fa-2x' title=\"$name\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";'></i>&nbsp;";
+                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
                         echo sprintf(__('%1$s %2$s'), __('This printer is used by a', 'vip'), $name);
                     }
                     echo "</div>";
