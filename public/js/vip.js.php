@@ -49,11 +49,11 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
                     // Launched on each complete Ajax load
                     $(document).ajaxComplete(function (event, xhr, option) {
-
+                        console.log(option.url);
                         if (option.url !== undefined
                             && (option.url.indexOf('vip/ajax/loadscripts.php') > 0
                                 || option.url.indexOf('common.tabs.php') > 0)
-                                    || option.url.indexOf('ajax/comments.php') > 0) {
+                                    || option.url.indexOf('ajax/actorinformation.php?users_id_requester') > 0) {
                             setTimeout(function () {
                                 if (items_id > 0) {
                                     $.ajax({
@@ -67,15 +67,16 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                         success: function (response, opts) {
                                             var ticketVip = false;
                                             $.each(vip, function (index, val) {
+
                                                 $.each(response.used, function (index2, val2) {
                                                     var userid = val.id;
-
-                                                    if (val.id == val2
-                                                    ) {
-                                                        var userid = val.id;
+                                                    //if (val.id == val2
+                                                    //) {
+                                                        var userid = val2;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
                                                         $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
-                                                    }
+                                                    //}
+                                                    return false;
                                                 });
                                                 return false;
                                             });
