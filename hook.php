@@ -122,6 +122,7 @@ function plugin_vip_getAddSearchOptions($itemtype) {
             $sopt[$rng1]['name']          = 'Vip';
             $sopt[$rng1]['datatype']      = 'bool';
             $sopt[$rng1]['massiveaction'] = false;
+            $sopt[$rng1]['forcegroupby'] = true;
             break;
          case 'Group':
             $rng1                         = 10150;
