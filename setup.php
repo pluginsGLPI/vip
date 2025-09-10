@@ -35,7 +35,7 @@ define('PLUGIN_VIP_VERSION', '1.8.3');
 
 if (!defined("PLUGIN_VIP_DIR")) {
     define("PLUGIN_VIP_DIR", Plugin::getPhpDir("vip"));
-    define("PLUGIN_VIP_NOTFULL_DIR", Plugin::getPhpDir("vip", false));
+//    define("PLUGIN_VIP_NOTFULL_DIR", Plugin::getPhpDir("vip", false));
     $root = $CFG_GLPI['root_doc'] . '/plugins/vip';
     define("PLUGIN_VIP_WEBDIR", $root);
 }
