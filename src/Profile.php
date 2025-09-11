@@ -27,16 +27,24 @@
  --------------------------------------------------------------------------
  */
 
+namespace GlpiPlugin\Vip;
+
+use CommonGLPI;
+use DbUtils;
+use Html;
+use ProfileRight;
+use Session;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
 /**
- * Class PluginVipProfile
+ * Class Profile
  *
  * This class manages the profile rights of the plugin
  */
-class PluginVipProfile extends Profile
+class Profile extends \Profile
 {
 
     public static function getIcon()
@@ -55,7 +63,7 @@ class PluginVipProfile extends Profile
     {
         if ($item->getType() == 'Profile'
             && $item->getField('interface') != 'helpdesk') {
-            return self::createTabEntry(PluginVipVip::getTypeName());
+            return self::createTabEntry(Vip::getTypeName());
         }
         return '';
     }
@@ -102,11 +110,11 @@ class PluginVipProfile extends Profile
         echo "<div class='firstbloc'>";
         if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
             && $openform) {
-            $profile = new Profile();
+            $profile = new \Profile();
             echo "<form method='post' action='" . $profile->getFormURL() . "'>";
         }
 
-        $profile = new Profile();
+        $profile = new \Profile();
         $profile->getFromDB($profiles_id);
 
         $rights = $this->getAllRights();
@@ -136,7 +144,7 @@ class PluginVipProfile extends Profile
     public static function getAllRights($all = false)
     {
         $rights = [
-           ['itemtype' => 'PluginVipGroup',
+           ['itemtype' => Group::class,
                  'label'    => __('VIP', 'vip'),
                  'field'    => 'plugin_vip'
            ]

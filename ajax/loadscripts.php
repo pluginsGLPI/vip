@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Vip\Group;
+
 Html::header_nocache();
 Session::checkLoginUser();
 header("Content-Type: text/html; charset=UTF-8");
@@ -34,7 +36,7 @@ header("Content-Type: text/html; charset=UTF-8");
 global $CFG_GLPI;
 switch ($_POST['action']) {
     case "load":
-        $vip_group = new PluginVipGroup();
+        $vip_group = new Group();
         $vip       = $vip_group->getVipUsers();
 
         $params                            = [];

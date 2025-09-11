@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Vip\Ticket;
+
 Session::checkLoginUser();
 //Html::header_nocache();
 
@@ -73,7 +75,7 @@ switch ($_POST['action']) {
             'used' => []
         ];
 
-        $used = PluginVipTicket::getUserVipList($params['entities_id']);
+        $used = Ticket::getUserVipList($params['entities_id']);
         $used = array_unique($used);
         if (count($used) > 0) {
             $params = ['used' => $used];

@@ -27,47 +27,53 @@
  --------------------------------------------------------------------------
  */
 
-function plugin_vip_install() {
-   global $DB;
+use GlpiPlugin\Vip\Profile;
+use GlpiPlugin\Vip\RuleVip;
+use GlpiPlugin\Vip\Group;
+use GlpiPlugin\Vip\Ticket;
+
+function plugin_vip_install()
+{
+    global $DB;
    // Création de la table uniquement lors de la première installation
-   if (!$DB->tableExists("glpi_plugin_vip_groups")) {
-      $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/empty-1.8.0.sql");
-   }
+    if (!$DB->tableExists("glpi_plugin_vip_groups")) {
+        $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/empty-1.8.0.sql");
+    }
 
-   if ($DB->tableExists('glpi_plugin_vip_tickets')) {
-      $tables = ["glpi_plugin_vip_tickets"];
+    if ($DB->tableExists('glpi_plugin_vip_tickets')) {
+        $tables = ["glpi_plugin_vip_tickets"];
 
-      foreach ($tables as $table) {
-         $DB->dropTable($table);
-      }
-   }
+        foreach ($tables as $table) {
+            $DB->dropTable($table);
+        }
+    }
 
-   if (!$DB->fieldExists("glpi_plugin_vip_groups","vip_color")) {
-      $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/update-1.7.3.sql");
-   }
+    if (!$DB->fieldExists("glpi_plugin_vip_groups", "vip_color")) {
+        $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/update-1.7.3.sql");
+    }
 
-   if (!$DB->fieldExists("glpi_plugin_vip_groups","vip_icon")) {
-      $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/update-1.8.0.sql");
-   }
+    if (!$DB->fieldExists("glpi_plugin_vip_groups", "vip_icon")) {
+        $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/update-1.8.0.sql");
+    }
 
-   include_once(PLUGIN_VIP_DIR."/inc/profile.class.php");
-   PluginVipProfile::initProfile();
-   PluginVipProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+    Profile::initProfile();
+    Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
 
-   return true;
+    return true;
 }
 
-function plugin_vip_uninstall() {
-   global $DB;
+function plugin_vip_uninstall()
+{
+    global $DB;
 
-   $tables = ["glpi_plugin_vip_profiles",
-              "glpi_plugin_vip_groups",
+    $tables = ["glpi_plugin_vip_groups",
               "glpi_plugin_vip_tickets"];
 
-   foreach ($tables as $table)
-      $DB->dropTable($table);
+    foreach ($tables as $table) {
+        $DB->dropTable($table, true);
+    }
 
-   $tables_glpi = ["glpi_displaypreferences",
+    $tables_glpi = ["glpi_displaypreferences",
                    "glpi_documents_items",
                    "glpi_savedsearches",
                    "glpi_logs",
@@ -77,175 +83,183 @@ function plugin_vip_uninstall() {
                    "glpi_dropdowntranslations"];
 
     foreach ($tables_glpi as $table_glpi) {
-        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'PluginVip%']]);
+        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'GlpiPlugin\Vip%']]);
     }
    //drop rules
-   $Rule    = new Rule();
-   $a_rules = $Rule->find(['sub_type' => 'PluginVipRuleVip']);
-   foreach ($a_rules as $data) {
-      $Rule->delete($data);
-   }
+    $Rule    = new Rule();
+    $a_rules = $Rule->find(['sub_type' => RuleVip::class]);
+    foreach ($a_rules as $data) {
+        $Rule->delete($data);
+    }
 
    //Delete rights associated with the plugin
-   $profileRight = new ProfileRight();
-   foreach (PluginVipProfile::getAllRights() as $right) {
-      $profileRight->deleteByCriteria(['name' => $right['field']]);
-   }
+    $profileRight = new ProfileRight();
+    foreach (Profile::getAllRights() as $right) {
+        $profileRight->deleteByCriteria(['name' => $right['field']]);
+    }
 
-   PluginVipProfile::removeRightsFromSession();
-   return true;
+    Profile::removeRightsFromSession();
+    return true;
 }
 
-function plugin_vip_getPluginsDatabaseRelations() {
+function plugin_vip_getPluginsDatabaseRelations()
+{
 
-   if (Plugin::isPluginActive("vip"))
-      return [
+    if (Plugin::isPluginActive("vip")) {
+        return [
          "glpi_groups" => ["glpi_plugin_vip_groups" => "id"]
-      ];
-   else
-      return [];
+        ];
+    } else {
+        return [];
+    }
 }
 
-function plugin_vip_getAddSearchOptions($itemtype) {
+function plugin_vip_getAddSearchOptions($itemtype)
+{
 
-   $sopt = [];
+    $sopt = [];
 
-   if (Session::getCurrentInterface() == 'central'
+    if (Session::getCurrentInterface() == 'central'
        && Session::haveRight('plugin_vip', READ)) {
-      switch ($itemtype) {
-         case 'Ticket':
-         case 'Computer':
-         case 'Printer':
-            $rng1                         = 10100;
-            $sopt[$rng1]['table']         = 'glpi_plugin_vip_groups';
-            $sopt[$rng1]['field']         = 'isvip';
-            $sopt[$rng1]['name']          = 'Vip';
-            $sopt[$rng1]['datatype']      = 'bool';
-            $sopt[$rng1]['massiveaction'] = false;
-            $sopt[$rng1]['forcegroupby'] = true;
+        switch ($itemtype) {
+            case 'Ticket':
+            case 'Computer':
+            case 'Printer':
+                $rng1                         = 10100;
+                $sopt[$rng1]['table']         = 'glpi_plugin_vip_groups';
+                $sopt[$rng1]['field']         = 'isvip';
+                $sopt[$rng1]['name']          = 'Vip';
+                $sopt[$rng1]['datatype']      = 'bool';
+                $sopt[$rng1]['massiveaction'] = false;
+                $sopt[$rng1]['forcegroupby'] = true;
+                break;
+            case 'Group':
+                $rng1                         = 10150;
+                $sopt[$rng1]['table']         = 'glpi_plugin_vip_groups';
+                $sopt[$rng1]['field']         = 'isvip';
+                $sopt[$rng1]['linkfield']     = 'id';
+                $sopt[$rng1]['name']          = 'Vip';
+                $sopt[$rng1]['datatype']      = 'bool';
+                $sopt[$rng1]['massiveaction'] = false;
+                break;
+        }
+    }
+
+    return $sopt;
+}
+
+function plugin_vip_MassiveActions($type)
+{
+    if ($type == 'Group') {
+        $vip = new GlpiPlugin\Vip\Group();
+        return $vip->massiveActions();
+    }
+    return [];
+}
+
+function plugin_vip_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables)
+{
+    if ($ref_table == 'glpi_tickets') {
+        switch ($new_table) {
+            case "glpi_plugin_vip_groups":
+                $out = " LEFT JOIN `glpi_tickets_users` ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id` AND `glpi_tickets_users`.`type` = " . CommonITILActor::REQUESTER . ") ";
+                $out .= " LEFT JOIN `glpi_groups_users` ON (`glpi_tickets_users`.`users_id` = `glpi_groups_users`.`users_id`)";
+                $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
+
+                return $out;
+        }
+    } elseif ($ref_table == 'glpi_printers') {
+        switch ($new_table) {
+            case "glpi_plugin_vip_groups":
+  //            $out = " LEFT JOIN `glpi_users` `glpi_users_VIP` ON (`glpi_printers`.`users_id` = `glpi_users_VIP`.`id`) ";
+                $out = " LEFT JOIN `glpi_groups_users` ON (`glpi_printers`.`users_id` = `glpi_groups_users`.`users_id`)";
+                $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
+
+                return $out;
+        }
+    } elseif ($ref_table == 'glpi_computers') {
+        switch ($new_table) {
+            case "glpi_plugin_vip_groups":
+                //            $out = " LEFT JOIN `glpi_users` `glpi_users_VIP` ON (`glpi_printers`.`users_id` = `glpi_users_VIP`.`id`) ";
+                $out = " LEFT JOIN `glpi_groups_users` ON (`glpi_computers`.`users_id` = `glpi_groups_users`.`users_id`)";
+                $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
+
+                return $out;
+        }
+    }
+
+    return "";
+}
+
+function plugin_vip_giveItem($type, $ID, $data, $num)
+{
+    global $CFG_GLPI, $DB;
+
+    $searchopt = Search::getOptions($type);
+    $table     = $searchopt[$ID]["table"];
+    $field     = $searchopt[$ID]["field"];
+    switch ($type) {
+        case 'Ticket':
+            switch ($table . '.' . $field) {
+                case "glpi_plugin_vip_groups.isvip":
+                    if ($id = Ticket::isTicketVip($data["id"])) {
+                        $name = Group::getVipName($id);
+                        $color = Group::getVipColor($id);
+                        $icon = Group::getVipIcon($id);
+                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                    }
+                    break;
+            }
             break;
-         case 'Group':
-            $rng1                         = 10150;
-            $sopt[$rng1]['table']         = 'glpi_plugin_vip_groups';
-            $sopt[$rng1]['field']         = 'isvip';
-            $sopt[$rng1]['linkfield']     = 'id';
-            $sopt[$rng1]['name']          = 'Vip';
-            $sopt[$rng1]['datatype']      = 'bool';
-            $sopt[$rng1]['massiveaction'] = false;
+        case 'Printer':
+            switch ($table . '.' . $field) {
+                case "glpi_plugin_vip_groups.isvip":
+                    if ($id = Ticket::isPrinterVip($data["id"])) {
+                        $name = Group::getVipName($id);
+                        $color = Group::getVipColor($id);
+                        $icon = Group::getVipIcon($id);
+                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                    }
+                    break;
+            }
             break;
-      }
-   }
+        case 'Computer':
+            switch ($table . '.' . $field) {
+                case "glpi_plugin_vip_groups.isvip":
+                    if ($id = Ticket::isComputerVip($data["id"])) {
+                        $name = Group::getVipName($id);
+                        $color = Group::getVipColor($id);
+                        $icon = Group::getVipIcon($id);
+                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                    }
+                    break;
+            }
+            break;
+        case 'Group':
+            switch ($table . '.' . $field) {
+                case "glpi_plugin_vip_groups.isvip":
+                    if ($data[$num][0]['name']) {
+                        $name = Group::getVipName($data["id"]);
+                        $color = Group::getVipColor($data["id"]);
+                        $icon = Group::getVipIcon($data["id"]);
+                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                    }
+                    break;
+            }
+            break;
+    }
 
-   return $sopt;
+    return " ";
 }
 
-function plugin_vip_MassiveActions($type) {
-   if ($type == 'Group') {
-      $vip = new PluginVipGroup();
-      return $vip->massiveActions();
-   }
-   return [];
+function plugin_vip_executeActions($options)
+{
+    $vip = new RuleVip();
+    return $vip->executeActions($options['action'], $options['output'], $options['params']);
 }
 
-function plugin_vip_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables) {
-   if ($ref_table == 'glpi_tickets') {
-      switch ($new_table) {
-         case "glpi_plugin_vip_groups" :
-            $out = " LEFT JOIN `glpi_tickets_users` ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id` AND `glpi_tickets_users`.`type` = " . CommonITILActor::REQUESTER . ") ";
-            $out .= " LEFT JOIN `glpi_groups_users` ON (`glpi_tickets_users`.`users_id` = `glpi_groups_users`.`users_id`)";
-            $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
-
-            return $out;
-      }
-   } else if ($ref_table == 'glpi_printers') {
-      switch ($new_table) {
-         case "glpi_plugin_vip_groups" :
-//            $out = " LEFT JOIN `glpi_users` `glpi_users_VIP` ON (`glpi_printers`.`users_id` = `glpi_users_VIP`.`id`) ";
-            $out = " LEFT JOIN `glpi_groups_users` ON (`glpi_printers`.`users_id` = `glpi_groups_users`.`users_id`)";
-            $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
-
-            return $out;
-      }
-   } else if ($ref_table == 'glpi_computers') {
-      switch ($new_table) {
-         case "glpi_plugin_vip_groups" :
-            //            $out = " LEFT JOIN `glpi_users` `glpi_users_VIP` ON (`glpi_printers`.`users_id` = `glpi_users_VIP`.`id`) ";
-            $out = " LEFT JOIN `glpi_groups_users` ON (`glpi_computers`.`users_id` = `glpi_groups_users`.`users_id`)";
-            $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
-
-            return $out;
-      }
-   }
-
-   return "";
-}
-
-function plugin_vip_giveItem($type, $ID, $data, $num) {
-   global $CFG_GLPI, $DB;
-
-   $searchopt = Search::getOptions($type);
-   $table     = $searchopt[$ID]["table"];
-   $field     = $searchopt[$ID]["field"];
-   switch ($type) {
-      case 'Ticket':
-         switch ($table . '.' . $field) {
-            case "glpi_plugin_vip_groups.isvip" :
-               if ($id = PluginVipTicket::isTicketVip($data["id"])) {
-                  $name = PluginVipGroup::getVipName($id);
-                  $color = PluginVipGroup::getVipColor($id);
-                  $icon = PluginVipGroup::getVipIcon($id);
-                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
-               }
-               break;
-         }
-         break;
-      case 'Printer':
-         switch ($table . '.' . $field) {
-            case "glpi_plugin_vip_groups.isvip" :
-               if ($id = PluginVipTicket::isPrinterVip($data["id"])) {
-                  $name = PluginVipGroup::getVipName($id);
-                  $color = PluginVipGroup::getVipColor($id);
-                  $icon = PluginVipGroup::getVipIcon($id);
-                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
-               }
-               break;
-         }
-         break;
-      case 'Computer':
-         switch ($table . '.' . $field) {
-            case "glpi_plugin_vip_groups.isvip" :
-               if ($id = PluginVipTicket::isComputerVip($data["id"])) {
-                  $name = PluginVipGroup::getVipName($id);
-                  $color = PluginVipGroup::getVipColor($id);
-                  $icon = PluginVipGroup::getVipIcon($id);
-                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
-               }
-               break;
-         }
-         break;
-      case 'Group':
-         switch ($table . '.' . $field) {
-            case "glpi_plugin_vip_groups.isvip" :
-               if ($data[$num][0]['name']) {
-                  $name = PluginVipGroup::getVipName($data["id"]);
-                  $color = PluginVipGroup::getVipColor($data["id"]);
-                  $icon = PluginVipGroup::getVipIcon($data["id"]);
-                  return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
-               }
-               break;
-         }
-         break;
-   }
-
-   return " ";
-}
-
-function plugin_vip_executeActions($options) {
-   $vip = new PluginVipRuleVip();
-   return $vip->executeActions($options['action'], $options['output'], $options['params']);
-}
-
-function plugin_vip_redefine_api_schemas(array $data): array {
+function plugin_vip_redefine_api_schemas(array $data): array
+{
     if (!Session::haveRight('plugin_vip', READ)) {
         return $data;
     }

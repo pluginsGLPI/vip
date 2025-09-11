@@ -94,8 +94,6 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                             var ticketVip = false;
                                             $.each(vip, function (index, val) {
                                                 $.each(response.used, function (index2, val2) {
-                                                    var userid = val.id;
-
                                                     if (val.id == val2
                                                     ) {
                                                         var userid = val.id;

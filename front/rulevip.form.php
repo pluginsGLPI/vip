@@ -27,8 +27,8 @@
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Vip\RuleVipCollection;
 
-$rulecollection = new PluginVipRuleVipCollection($_SESSION['glpiactive_entity']);
+$rulecollection = new RuleVipCollection($_SESSION['glpiactive_entity']);
 
 include(GLPI_ROOT . "/front/rule.common.form.php");

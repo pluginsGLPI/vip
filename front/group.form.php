@@ -27,11 +27,11 @@
  --------------------------------------------------------------------------
  */
 
-include("../../../inc/includes.php");
+use GlpiPlugin\Vip\Group;
 
 Session::checkRight("plugin_vip", UPDATE);
 
-$grp = new PluginVipGroup();
+$grp = new Group();
 
 if (isset($_POST['update_vip_group'])) {
    $grp->update($_POST);

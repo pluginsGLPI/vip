@@ -28,6 +28,12 @@
  */
 
 use Glpi\Plugin\Hooks;
+use GlpiPlugin\Vip\Dashboard;
+use GlpiPlugin\Vip\Profile;
+use GlpiPlugin\Vip\RuleVipCollection;
+use GlpiPlugin\Vip\Ticket;
+use GlpiPlugin\Vip\Vip;
+use GlpiPlugin\Vip\Group;
 
 global $CFG_GLPI;
 
@@ -48,17 +54,17 @@ function plugin_init_vip()
 
     $PLUGIN_HOOKS['csrf_compliant']['vip'] = true;
 
-    Plugin::registerClass('PluginVipProfile', ['addtabon' => ['Profile']]);
-    $PLUGIN_HOOKS['change_profile']['vip'] = ['PluginVipProfile', 'changeProfile'];
+    Plugin::registerClass(Profile::class, ['addtabon' => ['Profile']]);
+    $PLUGIN_HOOKS['change_profile']['vip'] = [Profile::class, 'changeProfile'];
 
     if (Session::haveRight('plugin_vip', UPDATE)) {
-        Plugin::registerClass('PluginVipGroup', ['addtabon' => ['Group']]);
+        Plugin::registerClass(Group::class, ['addtabon' => ['Group']]);
         $PLUGIN_HOOKS['use_massive_action']['vip'] = 1;
-        Plugin::registerClass('PluginVipTicket');
+        Plugin::registerClass(Ticket::class);
     }
 
     if (class_exists('PluginMydashboardMenu')) {
-        $PLUGIN_HOOKS['mydashboard']['vip'] = ["PluginVipDashboard"];
+        $PLUGIN_HOOKS['mydashboard']['vip'] = [Dashboard::class];
     }
 
     if (Session::haveRight('plugin_vip', READ)
@@ -67,8 +73,8 @@ function plugin_init_vip()
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip.js.php';
 //        $PLUGIN_HOOKS["javascript"]['vip']     = [PLUGIN_VIP_NOTFULL_DIR."/js/vip.js.php"];
 
-        if (class_exists('PluginVipTicket')) {
-            foreach (PluginVipTicket::$types as $item) {
+        if (class_exists(Ticket::class)) {
+            foreach (Ticket::$types as $item) {
                 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], strtolower($item) . ".form.php") !== false) {
                     $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip_load_scripts.js.php';
   //               $PLUGIN_HOOKS['javascript']['vip']       = [
@@ -80,12 +86,12 @@ function plugin_init_vip()
     }
     if (isset($_SESSION["glpiactiveprofile"]["interface"])
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
-        $PLUGIN_HOOKS['pre_show_item']['vip'] = ['PluginVipTicket', 'showVIPInfos'];
+        $PLUGIN_HOOKS['pre_show_item']['vip'] = [Ticket::class, 'showVIPInfos'];
     }
-    $PLUGIN_HOOKS['item_add']['vip']    = ['User' => ['PluginVipVip', 'afterAdd']];
-    $PLUGIN_HOOKS['item_update']['vip'] = ['User' => ['PluginVipVip', 'afterUpdate']];
+    $PLUGIN_HOOKS['item_add']['vip']    = ['User' => [Vip::class, 'afterAdd']];
+    $PLUGIN_HOOKS['item_update']['vip'] = ['User' => [Vip::class, 'afterUpdate']];
 
-    Plugin::registerClass('PluginVipRuleVipCollection', [
+    Plugin::registerClass(RuleVipCollection::class, [
        'rulecollections_types' => true
     ]);
 

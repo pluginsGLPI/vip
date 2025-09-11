@@ -27,11 +27,19 @@
  --------------------------------------------------------------------------
  */
 
+namespace GlpiPlugin\Vip;
+
+use CommonDBTM;
+use CommonITILActor;
+use Computer;
+use Printer;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-class PluginVipTicket extends CommonDBTM
+
+class Ticket extends CommonDBTM
 {
     public static $types = ['Ticket', 'Printer', 'Computer'];
 
@@ -169,9 +177,9 @@ class PluginVipTicket extends CommonDBTM
         if ($item != null && in_array($item->getType(), self::$types)) {
             if ($item->getType() == 'Ticket') {
                 if ($id = self::isTicketVip($item->getID())) {
-                    $name = PluginVipGroup::getVipName($id);
-                    $icon = PluginVipGroup::getVipIcon($id);
-                    $color = PluginVipGroup::getVipColor($id);
+                    $name = Group::getVipName($id);
+                    $icon = Group::getVipIcon($id);
+                    $color = Group::getVipColor($id);
                     echo "<div class='alert alert-important alert-warning center' style='background-color: $color'>";
                     echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
                     echo sprintf(__('%1$s %2$s'), __('This ticket concerns at least one', 'vip'), $name);
@@ -179,16 +187,16 @@ class PluginVipTicket extends CommonDBTM
                 }
             } else {
                 if ($id = self::isUserVip($item->getField('users_id'))) {
-                    $color = PluginVipGroup::getVipColor($id);
+                    $color = Group::getVipColor($id);
                     echo "<div class='alert alert-important alert-warning center' style='background-color: $color'>";
                     if ($item->getType() == 'Computer') {
-                        $name = PluginVipGroup::getVipName($id);
-                        $icon = PluginVipGroup::getVipIcon($id);
+                        $name = Group::getVipName($id);
+                        $icon = Group::getVipIcon($id);
                         echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
                         echo sprintf(__('%1$s %2$s'), __('This computer is used by a', 'vip'), $name);
                     } elseif ($item->getType() == 'Printer') {
-                        $name = PluginVipGroup::getVipName($id);
-                        $icon = PluginVipGroup::getVipIcon($id);
+                        $name = Group::getVipName($id);
+                        $icon = Group::getVipIcon($id);
                         echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
                         echo sprintf(__('%1$s %2$s'), __('This printer is used by a', 'vip'), $name);
                     }

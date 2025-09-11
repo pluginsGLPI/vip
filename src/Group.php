@@ -28,13 +28,22 @@
  --------------------------------------------------------------------------
  */
 
+namespace GlpiPlugin\Vip;
+
+use CommonDBTM;
+use CommonGLPI;
+use DbUtils;
+use Dropdown;
 use Glpi\RichText\RichText;
+use Html;
+use MassiveAction;
+use Session;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
-class PluginVipGroup extends CommonDBTM
+class Group extends CommonDBTM
 {
     public static $rightname = "plugin_vip";
 
@@ -57,7 +66,7 @@ class PluginVipGroup extends CommonDBTM
         }
 
         $canedit = Session::haveRight("plugin_vip", UPDATE);
-        $prof    = new Profile();
+        $prof    = new \Profile();
 
         if ($id) {
             $this->getFromDB($id);
@@ -148,7 +157,7 @@ class PluginVipGroup extends CommonDBTM
     {
         if ($item->getType() == 'Group'
             && Session::haveRight("plugin_vip", UPDATE)) {
-            return self::createTabEntry(PluginVipVip::getTypeName());
+            return self::createTabEntry(Vip::getTypeName());
         }
         return '';
     }
@@ -236,11 +245,11 @@ class PluginVipGroup extends CommonDBTM
 
     /**
      * Massive actions available for infocom types
-     * @return type
+     * @return string[]
      */
     public function massiveActions()
     {
-        return ["PluginVipGroup:isvip" => __('Update') . " " . __('VIP group', 'vip')];
+        return [Group::class.":isvip" => __('Update') . " " . __('VIP group', 'vip')];
     }
 
     /**
@@ -304,7 +313,7 @@ class PluginVipGroup extends CommonDBTM
             if ($vip->canCreate()) {
                 $input = $ma->getInput();
                 foreach ($ids as $id) {
-                    //Item has alreaddy
+                    //Item has already
                     if ($vip->getFromDB($id)) {
                         $update = [
                             "id"    => $id,

@@ -27,14 +27,18 @@
  --------------------------------------------------------------------------
  */
 
+namespace GlpiPlugin\Vip;
+
+use Session;
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
 /**
- * Class PluginVipRuleVipCollection
+ * Class RuleVipCollection
  */
-class PluginVipRuleVipCollection extends RuleCollection {
+class RuleVipCollection extends \RuleCollection {
 
    // From RuleCollection
    public static $rightname   = 'plugin_vip';
@@ -45,7 +49,7 @@ class PluginVipRuleVipCollection extends RuleCollection {
       return Session::haveRight(self::$rightname, UPDATE);
    }
    /**
-    * @return translated
+    * @return string
     */
    function getTitle() {
 

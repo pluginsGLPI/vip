@@ -28,21 +28,29 @@
  --------------------------------------------------------------------------
  */
 
+namespace GlpiPlugin\Vip;
+
+use Auth;
+use AuthLDAP;
+use CommonDBTM;
+use Group_User;
+use User;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
 
 /**
- * Class PluginVipVip
+ * Class Vip
  */
-class PluginVipVip extends CommonDBTM
+class Vip extends CommonDBTM
 {
     public static $rightname = 'plugin_vip';
 
     /**
      * @param int $nb
      *
-     * @return translated
+     * @return string
      */
     public static function getTypeName($nb = 0)
     {
@@ -56,7 +64,7 @@ class PluginVipVip extends CommonDBTM
 
     public static function afterAdd(User $user)
     {
-        $rulevip   = new PluginVipRuleVip();
+        $rulevip   = new RuleVip();
         $criterias = $rulevip->getCriterias();
 
         if (isset($user->fields["authtype"])
@@ -83,7 +91,7 @@ class PluginVipVip extends CommonDBTM
                 }
             }
 
-            $ruleCollection = new PluginVipRuleVipCollection($user->fields['entities_id']);
+            $ruleCollection = new RuleVipCollection($user->fields['entities_id']);
             $fields         = [];
 
             $fields = $ruleCollection->processAllRules($input, $fields, []);
@@ -106,7 +114,7 @@ class PluginVipVip extends CommonDBTM
 
     public static function afterUpdate(User $user)
     {
-        $rulevip   = new PluginVipRuleVip();
+        $rulevip   = new RuleVip();
         $criterias = $rulevip->getCriterias();
 
         if (isset($user->fields["authtype"])
@@ -133,7 +141,7 @@ class PluginVipVip extends CommonDBTM
                 }
             }
 
-            $ruleCollection = new PluginVipRuleVipCollection($user->fields['entities_id']);
+            $ruleCollection = new RuleVipCollection($user->fields['entities_id']);
             $fields         = [];
 
             $fields = $ruleCollection->processAllRules($input, $fields, []);

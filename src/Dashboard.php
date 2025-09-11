@@ -27,7 +27,23 @@
  --------------------------------------------------------------------------
  */
 
-class PluginVipDashboard extends CommonGLPI
+namespace GlpiPlugin\Vip;
+
+use CommonGLPI;
+use CommonITILActor;
+use CommonITILObject;
+use DBmysqlIterator;
+use DbUtils;
+use Group_User;
+use Html;
+use PluginMydashboardHelper;
+use PluginMydashboardHtml;
+use PluginMydashboardMenu;
+use PluginMydashboardWidget;
+use Session;
+use Toolbox;
+
+class Dashboard extends CommonGLPI
 {
     public $widgets = [];
     private $options;
@@ -122,7 +138,7 @@ class PluginVipDashboard extends CommonGLPI
 
                 if ($nb) {
                     foreach ($result as $data) {
-                        $ticket = new Ticket();
+                        $ticket = new \Ticket();
                         $ticket->getFromDB($data['tickets_id']);
                         if ($ticket->countUsers(CommonITILActor::REQUESTER)) {
                             $users = [];
@@ -130,7 +146,7 @@ class PluginVipDashboard extends CommonGLPI
                                 $users[] = $u['users_id'];
                             }
                             foreach ($users as $key => $val) {
-                                if (PluginVipTicket::isUserVip($val) !== false) {
+                                if (Ticket::isUserVip($val) !== false) {
                                     $tickets[] = $data;
                                 }
                             }
@@ -139,7 +155,7 @@ class PluginVipDashboard extends CommonGLPI
                     $i = 0;
 
                     foreach ($tickets as $key => $val) {
-                        $ticket = new Ticket();
+                        $ticket = new \Ticket();
                         $ticket->getFromDB($val['tickets_id']);
 
                         $bgcolor = $_SESSION["glpipriority_" . $ticket->fields["priority"]];
@@ -170,7 +186,7 @@ class PluginVipDashboard extends CommonGLPI
                         }
                         $datas[$i]["users_id"] = $userdata;
 
-                        $datas[$i]["status"] = Ticket::getStatus($val['status']);
+                        $datas[$i]["status"] = \Ticket::getStatus($val['status']);
 
                         $time_to_resolve = '';
                         $due             = strtotime(date('Y-m-d H:i:s')) - strtotime($val['time_to_resolve']);
@@ -188,7 +204,7 @@ class PluginVipDashboard extends CommonGLPI
                             foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
                                 $k = $u['users_id'];
                                 if ($k) {
-                                    $techdata .= $dbu->getUserName($k);
+                                    $techdata .= getUserName($k);
                                 }
 
 
