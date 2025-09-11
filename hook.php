@@ -44,7 +44,7 @@ function plugin_vip_install()
         $tables = ["glpi_plugin_vip_tickets"];
 
         foreach ($tables as $table) {
-            $DB->dropTable($table);
+            $DB->dropTable($table, true);
         }
     }
 
