@@ -29,6 +29,7 @@
 
 namespace GlpiPlugin\Vip;
 
+use DbUtils;
 use Html;
 
 if (!defined('GLPI_ROOT')) {
