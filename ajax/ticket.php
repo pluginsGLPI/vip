@@ -44,7 +44,7 @@ switch ($_POST['action']) {
         ];
 
         if (isset($_POST['items_id'])) {
-            $ticket = new Ticket();
+            $ticket = new \Ticket();
             $actor = new Ticket_User();
             if ($ticket->getFromDB($_POST['items_id'])) {
                 $actors = $actor->getActors($_POST['items_id']);
