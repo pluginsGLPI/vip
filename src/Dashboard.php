@@ -36,10 +36,11 @@ use DBmysqlIterator;
 use DbUtils;
 use Group_User;
 use Html;
-use PluginMydashboardHelper;
-use PluginMydashboardHtml;
-use PluginMydashboardMenu;
-use PluginMydashboardWidget;
+use GlpiPlugin\Mydashboard\Datatable;
+use GlpiPlugin\Mydashboard\Helper;
+use GlpiPlugin\Mydashboard\Html as MydashboardHtml;
+use GlpiPlugin\Mydashboard\Menu;
+use GlpiPlugin\Mydashboard\Widget;
 use Session;
 use Toolbox;
 
@@ -61,9 +62,9 @@ class Dashboard extends CommonGLPI
     public function getWidgetsForItem()
     {
         $widgets = [
-            PluginMydashboardMenu::$HELPDESK => [
+            Menu::$HELPDESK => [
                 $this->getType() . "1" => ["title"   => __("Tickets VIP", "mydashboard"),
-                                           "type"    => PluginMydashboardWidget::$TABLE,
+                                           "type"    => Widget::$TABLE,
                                            "comment" => ""],
             ],
         ];
@@ -78,7 +79,7 @@ class Dashboard extends CommonGLPI
         $dbu = new DbUtils();
         switch ($widgetId) {
             case $this->getType() . "1":
-                $widget = new PluginMydashboardHtml();
+                $widget = new MydashboardHtml();
 
                 $link_ticket = Toolbox::getItemTypeFormURL("Ticket");
 
@@ -122,7 +123,7 @@ class Dashboard extends CommonGLPI
                 }
                 $it = new DBmysqlIterator($DB);
                 $it->buildQuery($criteria);
-                $widget  = PluginMydashboardHelper::getWidgetsFromDBQuery('table', $it->getSql());
+                $widget  = Helper::getWidgetsFromDBQuery('table', $it->getSql());
                 $headers = [__('ID'),
                             _n('Requester', 'Requesters', 2),
                             __('Status'),
