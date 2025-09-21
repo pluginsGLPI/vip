@@ -105,7 +105,7 @@ function plugin_version_vip()
 
     return ['name'           => "VIP",
            'version'        => PLUGIN_VIP_VERSION,
-           'author'         => '<a href="http://www.probesys.com">Probesys</a> & <a href="http://blogglpi.infotel.com">Infotel</a>',
+           'author'         => '<a href="http://www.probesys.com">Probesys</a> & <a href="https//blogglpi.infotel.com">Infotel</a>, Xavier CAILLAUD',
            'license'        => 'AGPLv3+',
            'homepage'       => 'https://github.com/pluginsGLPI/vip',
            'requirements'   => [
