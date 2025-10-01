@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[o:infotelglpi:p:glpi-vip:r:glpi-pot]
+file_filter = locales/<lang>.po
+source_file = locales/connections.pot
+source_lang = en_GB
+
