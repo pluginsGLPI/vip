@@ -162,28 +162,68 @@ function plugin_vip_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$alr
     if ($ref_table == 'glpi_tickets') {
         switch ($new_table) {
             case "glpi_plugin_vip_groups":
-                $out = " LEFT JOIN `glpi_tickets_users` ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id` AND `glpi_tickets_users`.`type` = " . CommonITILActor::REQUESTER . ") ";
-                $out .= " LEFT JOIN `glpi_groups_users` ON (`glpi_tickets_users`.`users_id` = `glpi_groups_users`.`users_id`)";
-                $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
-
+                $out['LEFT JOIN'] = [
+                    'glpi_tickets_users' => [
+                        'ON' => [
+                            'glpi_tickets'  => 'id',
+                            'glpi_tickets_users'  => 'tickets_id', [
+                                'AND' => [
+                                    'glpi_tickets_users.type' => CommonITILActor::REQUESTER,
+                                ],
+                            ],
+                        ],
+                    ],
+                    'glpi_groups_users' => [
+                        'ON' => [
+                            'glpi_tickets_users'  => 'users_id',
+                            'glpi_groups_users'  => 'users_id',
+                        ],
+                    ],
+                    'glpi_plugin_vip_groups' => [
+                        'ON' => [
+                            'glpi_groups_users'  => 'groups_id',
+                            'glpi_plugin_vip_groups'  => 'id',
+                        ],
+                    ],
+                ];
                 return $out;
         }
     } elseif ($ref_table == 'glpi_printers') {
         switch ($new_table) {
             case "glpi_plugin_vip_groups":
-  //            $out = " LEFT JOIN `glpi_users` `glpi_users_VIP` ON (`glpi_printers`.`users_id` = `glpi_users_VIP`.`id`) ";
-                $out = " LEFT JOIN `glpi_groups_users` ON (`glpi_printers`.`users_id` = `glpi_groups_users`.`users_id`)";
-                $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
-
+                $out['LEFT JOIN'] = [
+                    'glpi_groups_users' => [
+                        'ON' => [
+                            'glpi_printers'  => 'users_id',
+                            'glpi_groups_users'  => 'users_id',
+                        ],
+                    ],
+                    'glpi_plugin_vip_groups' => [
+                        'ON' => [
+                            'glpi_groups_users'  => 'groups_id',
+                            'glpi_plugin_vip_groups'  => 'id',
+                        ],
+                    ],
+                ];
                 return $out;
         }
     } elseif ($ref_table == 'glpi_computers') {
         switch ($new_table) {
             case "glpi_plugin_vip_groups":
-                //            $out = " LEFT JOIN `glpi_users` `glpi_users_VIP` ON (`glpi_printers`.`users_id` = `glpi_users_VIP`.`id`) ";
-                $out = " LEFT JOIN `glpi_groups_users` ON (`glpi_computers`.`users_id` = `glpi_groups_users`.`users_id`)";
-                $out .= " LEFT JOIN `glpi_plugin_vip_groups` ON (`glpi_groups_users`.`groups_id` = `glpi_plugin_vip_groups`.`id`)";
-
+                $out['LEFT JOIN'] = [
+                    'glpi_groups_users' => [
+                        'ON' => [
+                            'glpi_computers'  => 'users_id',
+                            'glpi_groups_users'  => 'users_id',
+                        ],
+                    ],
+                    'glpi_plugin_vip_groups' => [
+                        'ON' => [
+                            'glpi_groups_users'  => 'groups_id',
+                            'glpi_plugin_vip_groups'  => 'id',
+                        ],
+                    ],
+                ];
                 return $out;
         }
     }
