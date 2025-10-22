@@ -32,11 +32,13 @@ namespace GlpiPlugin\Vip;
 
 use CommonDBTM;
 use CommonGLPI;
+use DBConnection;
 use DbUtils;
 use Dropdown;
 use Glpi\RichText\RichText;
 use Html;
 use MassiveAction;
+use Migration;
 use Session;
 
 if (!defined('GLPI_ROOT')) {
@@ -51,6 +53,71 @@ class Group extends CommonDBTM
     {
         return "ti ti-vip";
     }
+
+    public static function install(Migration $migration)
+    {
+        global $DB;
+
+        $default_charset   = DBConnection::getDefaultCharset();
+        $default_collation = DBConnection::getDefaultCollation();
+        $default_key_sign  = DBConnection::getDefaultPrimaryKeySignOption();
+        $table  = self::getTable();
+
+        if (!$DB->tableExists($table)) {
+            $query = "CREATE TABLE `$table` (
+                        `id` int {$default_key_sign} NOT NULL default 0 COMMENT 'RELATION to glpi_groups(id)',
+                        `name` varchar(100) DEFAULT 'VIP',
+                        `isvip` tinyint default '0',
+                        `vip_color` varchar(10) DEFAULT '#ff0000' NOT NULL,
+                        `vip_icon` varchar(100) DEFAULT 'ti-vip',
+                        PRIMARY KEY (`id`)
+               ) ENGINE=InnoDB DEFAULT CHARSET={$default_charset} COLLATE={$default_collation} ROW_FORMAT=DYNAMIC;";
+
+            $DB->doQuery($query);
+
+            $DB->insert(
+                $table,
+                ['id' => 0,
+                    'isvip' => 0]
+            );
+        }
+
+        if (!$DB->fieldExists($table, "vip_color")) {
+            $migration->addField($table, "vip_color", "varchar(10) DEFAULT '#ff0000' NOT NULL");
+            $migration->migrationOneTable($table);
+        }
+
+        if (!$DB->fieldExists($table, "vip_icon")) {
+            $migration->addField($table, "vip_icon", "varchar(100) DEFAULT 'ti-vip'");
+            $migration->migrationOneTable($table);
+        }
+
+        if (!$DB->fieldExists($table, "name")) {
+            $migration->addField($table, "name", "varchar(100) DEFAULT 'VIP'");
+            $migration->migrationOneTable($table);
+        }
+    }
+
+    public static function uninstall()
+    {
+        global $DB;
+
+        $DB->dropTable(self::getTable(), true);
+
+        $tables_glpi = ["glpi_displaypreferences",
+            "glpi_documents_items",
+            "glpi_savedsearches",
+            "glpi_logs",
+            "glpi_items_tickets",
+            "glpi_contracts_items",
+            "glpi_notepads",
+            "glpi_dropdowntranslations"];
+
+        foreach ($tables_glpi as $table_glpi) {
+            $DB->delete($table_glpi, ['itemtype' => ['LIKE' => Group::class]]);
+        }
+    }
+
     /**
      * Configuration form
      * */

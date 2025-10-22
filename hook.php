@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
@@ -27,36 +28,31 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Api\HL\Doc\Schema;
+use GlpiPlugin\Vip\Group;
 use GlpiPlugin\Vip\Profile;
 use GlpiPlugin\Vip\RuleVip;
-use GlpiPlugin\Vip\Group;
 use GlpiPlugin\Vip\Ticket;
 
 function plugin_vip_install()
 {
     global $DB;
-   // Création de la table uniquement lors de la première installation
-    if (!$DB->tableExists("glpi_plugin_vip_groups")) {
-        $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/empty-1.8.0.sql");
-    }
+
+    $migration = new Migration(PLUGIN_VIP_VERSION);
+
+    // Adds the right(s) to all pre-existing profiles with no access by default
+    Profile::initProfile();
+
+    // Grants full access to profiles that can update the Config (super-admins)
+    $migration->addRight(Group::$rightname, ALLSTANDARDRIGHT, [Config::$rightname => UPDATE]);
+
+
+    Group::install($migration);
 
     if ($DB->tableExists('glpi_plugin_vip_tickets')) {
-        $tables = ["glpi_plugin_vip_tickets"];
-
-        foreach ($tables as $table) {
-            $DB->dropTable($table, true);
-        }
+        $DB->dropTable("glpi_plugin_vip_tickets", true);
     }
 
-    if (!$DB->fieldExists("glpi_plugin_vip_groups", "vip_color")) {
-        $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/update-1.7.3.sql");
-    }
-
-    if (!$DB->fieldExists("glpi_plugin_vip_groups", "vip_icon")) {
-        $DB->runFile(PLUGIN_VIP_DIR. "/install/sql/update-1.8.0.sql");
-    }
-
-    Profile::initProfile();
     Profile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
 
     return true;
@@ -64,35 +60,17 @@ function plugin_vip_install()
 
 function plugin_vip_uninstall()
 {
-    global $DB;
 
-    $tables = ["glpi_plugin_vip_groups",
-              "glpi_plugin_vip_tickets"];
+    Group::uninstall();
 
-    foreach ($tables as $table) {
-        $DB->dropTable($table, true);
-    }
-
-    $tables_glpi = ["glpi_displaypreferences",
-                   "glpi_documents_items",
-                   "glpi_savedsearches",
-                   "glpi_logs",
-                   "glpi_items_tickets",
-                   "glpi_contracts_items",
-                   "glpi_notepads",
-                   "glpi_dropdowntranslations"];
-
-    foreach ($tables_glpi as $table_glpi) {
-        $DB->delete($table_glpi, ['itemtype' => ['LIKE' => 'GlpiPlugin\Vip%']]);
-    }
-   //drop rules
+    //drop rules
     $Rule    = new Rule();
     $a_rules = $Rule->find(['sub_type' => RuleVip::class]);
     foreach ($a_rules as $data) {
         $Rule->delete($data);
     }
 
-   //Delete rights associated with the plugin
+    //Delete rights associated with the plugin
     $profileRight = new ProfileRight();
     foreach (Profile::getAllRights() as $right) {
         $profileRight->deleteByCriteria(['name' => $right['field']]);
@@ -107,7 +85,7 @@ function plugin_vip_getPluginsDatabaseRelations()
 
     if (Plugin::isPluginActive("vip")) {
         return [
-         "glpi_groups" => ["glpi_plugin_vip_groups" => "id"]
+            "glpi_groups" => ["glpi_plugin_vip_groups" => "id"],
         ];
     } else {
         return [];
@@ -151,7 +129,7 @@ function plugin_vip_getAddSearchOptions($itemtype)
 function plugin_vip_MassiveActions($type)
 {
     if ($type == 'Group') {
-        $vip = new GlpiPlugin\Vip\Group();
+        $vip = new Group();
         return $vip->massiveActions();
     }
     return [];
@@ -310,9 +288,9 @@ function plugin_vip_redefine_api_schemas(array $data): array
         switch ($schema['x-itemtype']) {
             case 'User':
                 $schema['properties']['vip_groups'] = [
-                    'type' => \Glpi\Api\HL\Doc\Schema::TYPE_ARRAY,
+                    'type' => Schema::TYPE_ARRAY,
                     'items' => [
-                        'type' => \Glpi\Api\HL\Doc\Schema::TYPE_OBJECT,
+                        'type' => Schema::TYPE_OBJECT,
                         'x-join' => [
                             // This is the join with the desired data
                             'table' => 'glpi_plugin_vip_groups',
@@ -323,29 +301,29 @@ function plugin_vip_redefine_api_schemas(array $data): array
                                 'table' => 'glpi_groups_users',
                                 'fkey' => 'id',
                                 'field' => 'users_id',
-                            ]
+                            ],
                         ],
                         'properties' => [
                             'id' => [
-                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_INTEGER,
+                                'type' => Schema::TYPE_INTEGER,
                                 'x-readonly' => true,
                             ],
                             'name' => [
-                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_STRING,
+                                'type' => Schema::TYPE_STRING,
                                 'x-readonly' => true,
                             ],
                             'color' => [
-                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_STRING,
+                                'type' => Schema::TYPE_STRING,
                                 'x-readonly' => true,
-                                'x-field' => 'vip_color'
+                                'x-field' => 'vip_color',
                             ],
                             'icon' => [
-                                'type' => \Glpi\Api\HL\Doc\Schema::TYPE_STRING,
+                                'type' => Schema::TYPE_STRING,
                                 'x-readonly' => true,
-                                'x-field' => 'vip_icon'
+                                'x-field' => 'vip_icon',
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ];
                 break;
         }
