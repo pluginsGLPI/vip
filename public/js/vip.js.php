@@ -1,8 +1,5 @@
 <?php
-use Glpi\Event;
-include('../../../../inc/includes.php');
 header('Content-Type: text/javascript');
-
 ?>
 
 var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
@@ -22,9 +19,9 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
             object.params['root_doc'] = null;
             object.params['emptyValue'] = null;
 
-            if (options != undefined) {
+            if (options !== undefined) {
                 $.each(options, function (index, val) {
-                    if (val != undefined && val != null) {
+                    if (val !== undefined && val != null) {
                         object.params[index] = val;
                     }
                 });
@@ -32,7 +29,6 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
         }
 
         this.changeRequesterColor = function (vip) {
-
             $(document).ready(function () {
 
                 // only in ticket form
@@ -49,12 +45,11 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
                     // Launched on each complete Ajax load
                     $(document).ajaxComplete(function (event, xhr, option) {
-                        console.log(option.url);
                         if (option.url !== undefined
-                            && (option.url.indexOf('vip/ajax/loadscripts.php') > 0
-                                || option.url.indexOf('common.tabs.php') > 0)
-                                    || option.url.indexOf('ajax/actorinformation.php?users_id_requester') > 0) {
+                            && (option.url.indexOf('vip/ajax/loadscripts.php') > 0 || option.url.indexOf('common.tabs.php') > 0)) {
+
                             setTimeout(function () {
+
                                 if (items_id > 0) {
                                     $.ajax({
                                         url: root_vip_doc + '/ajax/ticket.php',
@@ -64,23 +59,18 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                             'items_id': items_id,
                                             'action': 'getTicket'
                                         },
-                                        success: function (response, opts) {
-                                            var ticketVip = false;
+                                        success: function (response) {
                                             $.each(vip, function (index, val) {
-
                                                 $.each(response.used, function (index2, val2) {
-                                                    var userid = val.id;
-                                                    //if (val.id == val2
-                                                    //) {
-                                                        var userid = val2;
+                                                    if (val.id === val2
+                                                    ) {
+                                                        var userid = val.id;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
                                                         $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
-                                                    //}
-                                                    return false;
+                                                    }
                                                 });
-                                                return false;
                                             });
-                                        },
+                                        }
                                     });
                                 } else {
                                     $.ajax({
@@ -90,20 +80,18 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                         data: {
                                             'action': 'getVIP'
                                         },
-                                        success: function (response, opts) {
-                                            var ticketVip = false;
+                                        success: function (response) {
                                             $.each(vip, function (index, val) {
                                                 $.each(response.used, function (index2, val2) {
-                                                    if (val.id == val2
+                                                    if (val.id === val2
                                                     ) {
                                                         var userid = val.id;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
                                                         $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
                                                     }
                                                 });
-                                                //return false;
                                             });
-                                        },
+                                        }
                                     });
                                 }
                             }, 500);
@@ -131,24 +119,21 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                 'items_id': items_id,
                                 'action': 'getPrinter'
                             },
-                            success: function (response, opts) {
+                            success: function (response) {
                                 $.each(vip, function (index, val) {
                                     $.each(response.used, function (index2, val2) {
-                                        var userid = val.id;
-
-                                        if (val.id == val2
+                                        if (val.id === val2
                                         ) {
-                                            var userid = val.id;
                                             $("span[id^='select2-dropdown_users_id']").each(function () {
                                                 //not select2-dropdown_users_id_tech
                                                 selectname = $(this).attr('id');
-                                                if (selectname.indexOf('select2-dropdown_users_id_tech') == -1) {
+                                                if (selectname.indexOf('select2-dropdown_users_id_tech') === -1) {
                                                     $(this).css("color", val.color);
                                                 }
 
                                             });
                                             // $("span[id^='select2-dropdown_users_id']").css("color", val.color);
-                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-size:2em;color:" + val.color + "'></i>&nbsp;");
+                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
                                         }
                                     });
                                 });
@@ -176,24 +161,21 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                 'items_id': items_id,
                                 'action': 'getComputer'
                             },
-                            success: function (response, opts) {
+                            success: function (response) {
                                 $.each(vip, function (index, val) {
                                     $.each(response.used, function (index2, val2) {
-                                        var userid = val.id;
-
-                                        if (val.id == val2
+                                        if (val.id === val2
                                         ) {
-                                            var userid = val.id;
                                             $("span[id^='select2-dropdown_users_id']").each(function () {
                                                 //not select2-dropdown_users_id_tech
                                                 selectname = $(this).attr('id');
-                                                if (selectname.indexOf('select2-dropdown_users_id_tech') == -1) {
+                                                if (selectname.indexOf('select2-dropdown_users_id_tech') === -1) {
                                                     $(this).css("color", val.color);
                                                 }
 
                                             });
                                             // $("span[id^='select2-dropdown_users_id']").css("color", val.color);
-                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-size:2em;color:" + val.color + "'></i>&nbsp;");
+                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
                                         }
                                     });
                                 });
