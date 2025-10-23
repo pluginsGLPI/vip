@@ -180,24 +180,24 @@ class Ticket extends CommonDBTM
                     $name = Group::getVipName($id);
                     $icon = Group::getVipIcon($id);
                     $color = Group::getVipColor($id);
-                    echo "<div class='alert alert-important alert-warning center' style='background-color: $color'>";
-                    echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
+                    echo "<div class='alert alert-danger center'>";
+                    echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;color: $color'></i>&nbsp;";
                     echo sprintf(__('%1$s %2$s'), __('This ticket concerns at least one', 'vip'), $name);
                     echo "</div>";
                 }
             } else {
                 if ($id = self::isUserVip($item->getField('users_id'))) {
                     $color = Group::getVipColor($id);
-                    echo "<div class='alert alert-important alert-warning center' style='background-color: $color'>";
+                    echo "<div class='alert alert-danger center'>";
                     if ($item->getType() == 'Computer') {
                         $name = Group::getVipName($id);
                         $icon = Group::getVipIcon($id);
-                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
+                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;color: $color'></i>&nbsp;";
                         echo sprintf(__('%1$s %2$s'), __('This computer is used by a', 'vip'), $name);
                     } elseif ($item->getType() == 'Printer') {
                         $name = Group::getVipName($id);
                         $icon = Group::getVipIcon($id);
-                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;'></i>&nbsp;";
+                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;color: $color'></i>&nbsp;";
                         echo sprintf(__('%1$s %2$s'), __('This printer is used by a', 'vip'), $name);
                     }
                     echo "</div>";

@@ -211,7 +211,6 @@ function plugin_vip_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$alr
 
 function plugin_vip_giveItem($type, $ID, $data, $num)
 {
-    global $CFG_GLPI, $DB;
 
     $searchopt = Search::getOptions($type);
     $table     = $searchopt[$ID]["table"];
