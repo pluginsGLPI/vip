@@ -2,10 +2,10 @@
 VIP Plugin for GLPI
 
 Ce plugin est sur Transifex - Aidez-nous à le traduire :
-https://www.transifex.com/infotelGLPI/GLPI_vip/
+https://explore.transifex.com/infotelGLPI/glpi-vip/
 
 This plugin is on Transifex - Help us to translate :
-https://www.transifex.com/infotelGLPI/GLPI_vip/
+https://explore.transifex.com/infotelGLPI/glpi-vip/
 
 Fonctionnalité du plugin
 ------------
