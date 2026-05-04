@@ -95,16 +95,17 @@ switch ($_POST['action']) {
 
         if (isset($_POST['items_id'])) {
             $printer = new Printer();
-            $printer->getFromDB($_POST['items_id']);
+            if ($printer->getFromDB($_POST['items_id'])) {
+                $used = [];
+                if (isset($printer->fields['users_id'])) {
+                    $used[] = $printer->fields['users_id'];
+                }
 
-            $used = [];
-            $used[] = $printer->fields['users_id'];
-
-
-            $params = [
-                'used' => $used,
-                'entities_id' => $printer->fields['entities_id']
-            ];
+                $params = [
+                    'used' => $used,
+                    'entities_id' => $printer->fields['entities_id']
+                ];
+            }
         }
 
         echo json_encode($params);
