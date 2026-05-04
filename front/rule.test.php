@@ -27,15 +27,13 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Vip\RuleVip;
+
 Session::checkCentralAccess();
 
-if (isset($_POST["sub_type"])) {
-   $sub_type = $_POST["sub_type"];
-} else if (isset($_GET["sub_type"])) {
-   $sub_type = $_GET["sub_type"];
-} else {
-   $sub_type = 0;
-}
+$allowed_types = [RuleVip::class];
+$raw_type = $_POST["sub_type"] ?? $_GET["sub_type"] ?? '';
+$sub_type = in_array($raw_type, $allowed_types, true) ? $raw_type : '';
 
 if (isset($_POST["rules_id"])) {
    $rules_id = $_POST["rules_id"];
@@ -47,7 +45,7 @@ if (isset($_POST["rules_id"])) {
 
 $dbu = new DbUtils();
 
-if (!$rule = $dbu->getItemForItemtype($sub_type)) {
+if (!$sub_type || !$rule = $dbu->getItemForItemtype($sub_type)) {
    exit;
 }
 $rule->checkGlobal(READ);

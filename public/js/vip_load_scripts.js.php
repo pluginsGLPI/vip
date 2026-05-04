@@ -17,13 +17,11 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
             $.ajax({
                 url: root_vip_doc +'/ajax/loadscripts.php',
                 type: "POST",
-                dataType: "html",
+                dataType: "json",
                 data: 'action=load',
-                success: function (response, opts) {
-                    var scripts, scriptsFinder = /<script[^>]*>([\s\S]+?)<\/script>/gi;
-                    while (scripts = scriptsFinder.exec(response)) {
-                        eval(scripts[1]);
-                    }
+                success: function (data) {
+                    var viptest = $(document).initVipPlugin(data.params);
+                    viptest.changeRequesterColor(data.vip);
                 }
             });
         }

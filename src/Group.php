@@ -352,6 +352,9 @@ class Group extends CommonDBTM
 
     public function prepareInputForUpdate($input)
     {
+        $allowed = ['id', 'name', 'isvip', 'vip_color', 'vip_icon'];
+        $input = array_intersect_key($input, array_flip($allowed));
+
         if (isset($input['vip_icon']) && $input['vip_icon']) {
             $input['vip_icon'] = strip_tags(RichText::getTextFromHtml($input['vip_icon']));
         }

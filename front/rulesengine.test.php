@@ -27,15 +27,13 @@
  --------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Vip\RuleVipCollection;
+
 Session::checkCentralAccess();
 
-if (isset($_POST["sub_type"])) {
-   $sub_type = $_POST["sub_type"];
-} else if (isset($_GET["sub_type"])) {
-   $sub_type = $_GET["sub_type"];
-} else {
-   $sub_type = 0;
-}
+$allowed_types = [RuleVipCollection::class];
+$raw_type = $_POST["sub_type"] ?? $_GET["sub_type"] ?? '';
+$sub_type = in_array($raw_type, $allowed_types, true) ? $raw_type : '';
 
 if (isset($_POST["condition"])) {
    $condition = $_POST["condition"];
@@ -45,6 +43,9 @@ if (isset($_POST["condition"])) {
    $condition = 0;
 }
 
+if (!$sub_type) {
+   exit;
+}
 $rulecollection = RuleCollection::getClassByType($sub_type);
 if ($rulecollection->isRuleRecursive()) {
    $rulecollection->setEntity($_SESSION['glpiactive_entity']);

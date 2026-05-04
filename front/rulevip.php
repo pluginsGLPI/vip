@@ -29,6 +29,8 @@
 
 use GlpiPlugin\Vip\RuleVipCollection;
 
+Session::checkLoginUser();
+
 $rulecollection = new RuleVipCollection();
 
 include(GLPI_ROOT . "/front/rule.common.php");

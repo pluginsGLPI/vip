@@ -31,7 +31,7 @@ use GlpiPlugin\Vip\Group;
 
 Html::header_nocache();
 Session::checkLoginUser();
-header("Content-Type: text/html; charset=UTF-8");
+header("Content-Type: application/json; charset=UTF-8");
 
 global $CFG_GLPI;
 switch ($_POST['action']) {
@@ -45,9 +45,6 @@ switch ($_POST['action']) {
         $params['minimumResultsForSearch'] = $CFG_GLPI['ajax_limit_count'];
         $params['emptyValue']              = Dropdown::EMPTY_VALUE;
 
-        echo "<script type='text/javascript'>";
-        echo "var viptest = $(document).initVipPlugin(" . json_encode($params) . ");";
-        echo "viptest.changeRequesterColor(" . json_encode($vip) . ");";
-        echo "</script>";
+        echo json_encode(['vip' => $vip, 'params' => $params], JSON_HEX_TAG);
         break;
 }

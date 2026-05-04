@@ -51,14 +51,12 @@ function plugin_init_vip()
 
     global $PLUGIN_HOOKS;
 
-    $PLUGIN_HOOKS['csrf_compliant']['vip'] = true;
-
     Plugin::registerClass(Profile::class, ['addtabon' => ['Profile']]);
-    $PLUGIN_HOOKS['change_profile']['vip'] = [Profile::class, 'changeProfile'];
+    $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['vip'] = [Profile::class, 'changeProfile'];
 
     if (Session::haveRight('plugin_vip', UPDATE)) {
         Plugin::registerClass(Group::class, ['addtabon' => ['Group']]);
-        $PLUGIN_HOOKS['use_massive_action']['vip'] = 1;
+        $PLUGIN_HOOKS[Hooks::USE_MASSIVE_ACTION]['vip'] = 1;
         Plugin::registerClass(Ticket::class);
     }
 
@@ -76,9 +74,6 @@ function plugin_init_vip()
             foreach (Ticket::$types as $item) {
                 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], strtolower($item) . ".form.php") !== false) {
                     $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip_load_scripts.js.php';
-                     $PLUGIN_HOOKS['javascript']['vip']       = [
-                        PLUGIN_VIP_WEBDIR. "js/vip_load_scripts.js.php",
-                     ];
                 }
             }
         }
@@ -87,8 +82,8 @@ function plugin_init_vip()
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS['pre_show_item']['vip'] = [Ticket::class, 'showVIPInfos'];
     }
-    $PLUGIN_HOOKS['item_add']['vip']    = ['User' => [Vip::class, 'afterAdd']];
-    $PLUGIN_HOOKS['item_update']['vip'] = ['User' => [Vip::class, 'afterUpdate']];
+    $PLUGIN_HOOKS[Hooks::ITEM_ADD]['vip']    = ['User' => [Vip::class, 'afterAdd']];
+    $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['vip'] = ['User' => [Vip::class, 'afterUpdate']];
 
     Plugin::registerClass(RuleVipCollection::class, [
        'rulecollections_types' => true
