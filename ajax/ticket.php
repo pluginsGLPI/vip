@@ -46,8 +46,9 @@ switch ($_POST['action']) {
         if (isset($_POST['items_id'])) {
             $ticket = new \Ticket();
             $actor = new Ticket_User();
-            if ($ticket->getFromDB($_POST['items_id'])) {
-                $actors = $actor->getActors($_POST['items_id']);
+            $items_id = (int)$_POST['items_id'];
+            if ($ticket->getFromDB($items_id) && $ticket->can($items_id, READ)) {
+                $actors = $actor->getActors($items_id);
 
                 $used = [];
                 if (isset($actors[CommonITILActor::REQUESTER])) {
@@ -57,8 +58,8 @@ switch ($_POST['action']) {
                 }
 
                 $params = [
-                    'used' => $used,
-                    'entities_id' => $ticket->fields['entities_id']
+                    'used'        => $used,
+                    'entities_id' => $ticket->fields['entities_id'],
                 ];
             }
         }
@@ -95,15 +96,16 @@ switch ($_POST['action']) {
 
         if (isset($_POST['items_id'])) {
             $printer = new Printer();
-            if ($printer->getFromDB($_POST['items_id'])) {
+            $items_id = (int)$_POST['items_id'];
+            if ($printer->getFromDB($items_id) && $printer->can($items_id, READ)) {
                 $used = [];
                 if (isset($printer->fields['users_id'])) {
                     $used[] = $printer->fields['users_id'];
                 }
 
                 $params = [
-                    'used' => $used,
-                    'entities_id' => $printer->fields['entities_id']
+                    'used'        => $used,
+                    'entities_id' => $printer->fields['entities_id'],
                 ];
             }
         }
@@ -122,16 +124,16 @@ switch ($_POST['action']) {
 
         if (isset($_POST['items_id'])) {
             $computer = new Computer();
-            $computer->getFromDB($_POST['items_id']);
+            $items_id = (int)$_POST['items_id'];
+            if ($computer->getFromDB($items_id) && $computer->can($items_id, READ)) {
+                $used = [];
+                $used[] = $computer->fields['users_id'];
 
-            $used = [];
-            $used[] = $computer->fields['users_id'];
-
-
-            $params = [
-                'used' => $used,
-                'entities_id' => $computer->fields['entities_id']
-            ];
+                $params = [
+                    'used'        => $used,
+                    'entities_id' => $computer->fields['entities_id'],
+                ];
+            }
         }
         echo json_encode($params);
         break;
