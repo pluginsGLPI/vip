@@ -1,12 +1,11 @@
 <?php
 
 /*
- * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  vip plugin for GLPI
- Copyright (C) 2016-2022 by the vip Development Team.
+ Copyright (C) 2022-2026 by the vip Development Team.
 
- https://github.com/InfotelGLPI/vip
+ https://github.com/pluginsGLPI/vip
  -------------------------------------------------------------------------
 
  LICENSE
