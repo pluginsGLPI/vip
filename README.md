@@ -1,11 +1,9 @@
-# vip
-VIP Plugin for GLPI
+## VIP plugin for GLPI
 
-Ce plugin est sur Transifex - Aidez-nous à le traduire :
-https://explore.transifex.com/infotelGLPI/glpi-vip/
+[![License](https://img.shields.io/badge/License-GNU%20v3-blue.svg?style=flat-square)](https://github.com/pluginsGLPI/vip/blob/master/LICENSE)
+[![Translate](https://img.shields.io/badge/Translate-Transifex-cyan)](https://explore.transifex.com/infotelGLPI/glpi-vip/)
 
-This plugin is on Transifex - Help us to translate :
-https://explore.transifex.com/infotelGLPI/glpi-vip/
+### French
 
 Fonctionnalité du plugin
 ------------
@@ -16,6 +14,8 @@ Ce plugin permet d'indiquer dans l'interface du ticket si le demandeur du ticket
 
 * Indication dans l'interface du ticket par un logo type "VIP" et colorisation du nom de l'utilisateur en rouge si le demandeur du ticket fait partie d'un groupe explicite
 
+### English
+
 Plugin functionality
 ------------
 
@@ -24,4 +24,4 @@ This plugin allows you to indicate in the ticket interface if the ticket request
 * Parameter setting in the group interface:
    - Creation of a group, indication in the "VIP" window of the parameter if yes or no "VIP Group".
 
-* Indication in the ticket interface by a as "VIP" logo and colouring of the user's name in red if the ticket requester belongs to a explicite group
+* Indication in the ticket interface by a as "VIP" logo and coloring of the user's name in red if the ticket requester belongs to a explicite group
