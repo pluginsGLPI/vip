@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR VIP Development Team
-# This file is distributed under the same license as the GLPI - VIP plugin package.
+# This file is distributed under the same license as the VIP - Accounts plugin package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GLPI - VIP plugin\n"
+"Project-Id-Version: VIP - Accounts plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-02 07:50+0000\n"
+"POT-Creation-Date: 2026-06-28 20:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,47 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: inc/dashboard.class.php:43
-msgid "Tables"
-msgstr ""
-
-#: inc/dashboard.class.php:44 inc/dashboard.class.php:189
+#: src/Dashboard.php:66 src/Dashboard.php:226
 msgid "Tickets VIP"
 msgstr ""
 
-#: inc/group.class.php:62
+#: src/Group.php:144
 msgid "VIP management"
 msgstr ""
 
-#: inc/group.class.php:71 inc/group.class.php:228
+#: src/Group.php:153 src/Group.php:314
 msgid "VIP group"
 msgstr ""
 
-#: inc/group.class.php:76
+#: src/Group.php:158
 msgid "VIP color"
 msgstr ""
 
-#: inc/group.class.php:84
+#: src/Group.php:166
 msgid "VIP Icon"
 msgstr ""
 
-#: inc/group.class.php:141 inc/profile.class.php:53 inc/profile.class.php:132
-#: inc/vip.class.php:46
+#: src/Profile.php:148 src/Vip.php:56
 msgid "VIP"
 msgstr ""
 
-#: inc/rulevipcollection.class.php:51
+#: src/RuleVipCollection.php:56
 msgid "Rules for assigning a group"
 msgstr ""
 
-#: inc/ticket.class.php:158
+#: src/Ticket.php:185
 msgid "This ticket concerns at least one"
 msgstr ""
 
-#: inc/ticket.class.php:168
+#: src/Ticket.php:196
 msgid "This computer is used by a"
 msgstr ""
 
-#: inc/ticket.class.php:173
+#: src/Ticket.php:201
 msgid "This printer is used by a"
 msgstr ""
