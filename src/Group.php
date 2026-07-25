@@ -34,6 +34,7 @@ use CommonGLPI;
 use DBConnection;
 use DbUtils;
 use Dropdown;
+use Glpi\Application\View\TemplateRenderer;
 use Glpi\RichText\RichText;
 use Html;
 use MassiveAction;
@@ -132,74 +133,54 @@ class Group extends CommonDBTM
         }
 
         $canedit = Session::haveRight("plugin_vip", UPDATE);
-        $prof    = new \Profile();
 
         if ($id) {
             $this->getFromDB($id);
-            $prof->getFromDB($id);
         }
 
-        echo "<form action='" . $target . "' method='post'>";
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr><th colspan='2' class='center b'>" . __('VIP management', 'vip') . " : " . Dropdown::getDropdownName("glpi_groups", $this->fields["id"]);
-        echo "</th></tr>";
-
-        echo "<td>" . __('Name') . "</td>";
-        echo "<td>";
-        echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
-        echo "</td>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('VIP group', 'vip') . "</td><td>";
-        Dropdown::showYesNo("isvip", $this->fields["isvip"]);
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>" . __('VIP color', 'vip') . "</td>";
-        echo "<td colspan='3'>";
-        $rand = mt_rand();
-        Html::showColorField('vip_color', ['value' => $this->fields["vip_color"], 'rand' => $rand]);
-
-        echo "</td></tr>";
-
-        echo "<tr class='tab_bg_1'><td>";
-        echo __('VIP Icon', 'vip');
-        echo "</td>";
-        echo "<td colspan='2'>";
         $icon_selector_id = 'icon_' . mt_rand();
-        echo Html::select(
-            'vip_icon',
-            [$this->fields['vip_icon'] => $this->fields['vip_icon']],
-            [
-                'id' => $icon_selector_id,
-                'selected' => $this->fields['vip_icon'],
-                'style' => 'width:175px;',
-            ]
-        );
 
-        echo Html::script('js/modules/Form/WebIconSelector.js');
-        echo Html::scriptBlock("$(
-            function() {
-            import('/js/modules/Form/WebIconSelector.js').then((m) => {
-               var icon_selector = new m.default(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-               });
-            }
-         );");
+        TemplateRenderer::getInstance()->display('@vip/group_form.html.twig', [
+            'target'            => $target,
+            'label_management'  => __('VIP management', 'vip'),
+            'group_name'        => Dropdown::getDropdownName("glpi_groups", $this->fields["id"]),
+            'label_name'        => __('Name'),
+            'name_field'        => Html::input('name', ['value' => $this->fields['name'], 'size' => 40]),
+            'label_isvip'       => __('VIP group', 'vip'),
+            'isvip_field'       => Dropdown::showYesNo("isvip", $this->fields["isvip"], -1, ['display' => false]),
+            'label_color'       => __('VIP color', 'vip'),
+            'color_field'       => Html::showColorField('vip_color', ['value' => $this->fields["vip_color"], 'rand' => mt_rand(), 'display' => false]),
+            'label_icon'        => __('VIP Icon', 'vip'),
+            'icon_field'        => Html::select(
+                'vip_icon',
+                [$this->fields['vip_icon'] => $this->fields['vip_icon']],
+                [
+                    'id'       => $icon_selector_id,
+                    'selected' => $this->fields['vip_icon'],
+                    'style'    => 'width:175px;',
+                ]
+            ),
+            'can_edit'          => $canedit,
+            'id_field'          => Html::hidden('id', ['value' => $id]),
+            'submit_field'      => Html::submit(_sx('button', 'Update'), ['name' => 'update_vip_group', 'class' => 'btn btn-primary']),
+            'icon_selector_id'  => $icon_selector_id,
+        ]);
+    }
 
-        echo "</td>";
-        echo "</tr>";
-
-        if ($canedit) {
-            echo "<tr class='tab_bg_2'>";
-            echo "<td class='center' colspan='2'>";
-            echo Html::hidden('id', ['value' => $id]);
-            echo Html::submit(_sx('button', 'Update'), ['name' => 'update_vip_group', 'class' => 'btn btn-primary']);
-            echo "</td></tr>";
-        }
-        echo "</table>";
-
-        Html::closeForm();
+    /**
+     * Build the VIP badge (icon + hidden sort marker) for search/datatable cells.
+     *
+     * @param int $id VIP group id
+     *
+     * @return string
+     */
+    public static function getVipBadge($id): string
+    {
+        return TemplateRenderer::getInstance()->render('@vip/vip_badge.html.twig', [
+            'icon'  => self::getVipIcon($id),
+            'name'  => self::getVipName($id),
+            'color' => self::getVipColor($id),
+        ]);
     }
 
     /**
@@ -254,12 +235,32 @@ class Group extends CommonDBTM
      */
     public function getVipUsers()
     {
+        global $DB;
+
         $dbu = new DbUtils();
 
         $groups = $this->find(['isvip' => 1]);
 
         if (isset($groups[0])) {
             unset($groups[0]);
+        }
+
+        // The plugin VIP table has no entities_id column: restrict the VIP groups
+        // to the ones visible in the user's active entities via glpi_groups.
+        if (count($groups) > 0) {
+            $visible = $DB->request([
+                'SELECT' => 'id',
+                'FROM'   => 'glpi_groups',
+                'WHERE'  => [
+                    'id' => array_keys($groups),
+                    getEntitiesRestrictCriteria('glpi_groups', '', '', true),
+                ],
+            ]);
+            $visible_ids = [];
+            foreach ($visible as $group) {
+                $visible_ids[] = $group['id'];
+            }
+            $groups = array_intersect_key($groups, array_flip($visible_ids));
         }
 
         $vip = [];
@@ -340,7 +341,9 @@ class Group extends CommonDBTM
     public static function showMassiveActionsSubForm(MassiveAction $ma)
     {
         Dropdown::showYesNo('isvip');
-        echo "<br><br>" . Html::submit(_x('button', 'Save'), ['name' => 'massiveaction']);
+        TemplateRenderer::getInstance()->display('@vip/massiveaction_isvip.html.twig', [
+            'submit_field' => Html::submit(_x('button', 'Save'), ['name' => 'massiveaction']),
+        ]);
         return true;
     }
 
@@ -354,8 +357,28 @@ class Group extends CommonDBTM
         $allowed = ['id', 'name', 'isvip', 'vip_color', 'vip_icon'];
         $input = array_intersect_key($input, array_flip($allowed));
 
+        if (isset($input['isvip'])) {
+            // Boolean flag: normalize any forged POST value to 0/1.
+            $input['isvip'] = (int) (bool) $input['isvip'];
+        }
+        if (isset($input['name'])) {
+            // Free-text display name: strip any markup as defense in depth
+            // (the value is also reinjected client-side by vip.js).
+            $input['name'] = strip_tags(RichText::getTextFromHtml((string) $input['name']));
+        }
         if (isset($input['vip_icon']) && $input['vip_icon']) {
-            $input['vip_icon'] = strip_tags(RichText::getTextFromHtml($input['vip_icon']));
+            $icon = strip_tags(RichText::getTextFromHtml($input['vip_icon']));
+            // Only allow Tabler-like icon class tokens; fall back to the default otherwise.
+            if (!preg_match('/^[A-Za-z0-9 _-]+$/', $icon)) {
+                $icon = 'ti-vip';
+            }
+            $input['vip_icon'] = $icon;
+        }
+        if (isset($input['vip_color'])) {
+            // Only allow #rgb / #rrggbb hex colors; fall back to the default otherwise.
+            if (!preg_match('/^#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?$/', (string) $input['vip_color'])) {
+                $input['vip_color'] = '#ff0000';
+            }
         }
         return $input;
     }
@@ -372,31 +395,39 @@ class Group extends CommonDBTM
     ) {
         $vip = new self();
         //We check if it's really a massive action of vip
-        if (strpos($ma->getAction(), "plugin_vip_update") == -1) {
+        if (!str_contains($ma->getAction(), "plugin_vip_update")) {
             $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-        } else {
-            if ($vip->canCreate()) {
-                $input = $ma->getInput();
-                foreach ($ids as $id) {
-                    //Item has already
-                    if ($vip->getFromDB($id)) {
-                        $update = [
-                            "id"    => $id,
-                            "isvip" => $input['isvip'],
-                        ];
-                        $vip->update($update);
-                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                    } else { //Item has no vip yet
-                        $update = [
-                            "isvip" => $input['isvip'],
-                        ];
-                        $vip->add($update);
-                        $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
-                    }
+        } elseif ($vip->canCreate()) {
+            $input = $ma->getInput();
+            $isvip = (int) (bool) ($input['isvip'] ?? 0);
+            foreach ($ids as $id) {
+                $id = (int) $id;
+
+                // The VIP table has no entities_id column; its id matches a core
+                // glpi_groups id which carries the entity scope. Verify the user
+                // may access that group's entity before writing (same guard as
+                // front/group.form.php), otherwise a forged massive action could
+                // flip the flag on groups outside the caller's entities.
+                $core_group = new \Group();
+                if (
+                    !$core_group->getFromDB($id)
+                    || !Session::haveAccessToEntity($core_group->getEntityID(), $core_group->isRecursive())
+                ) {
+                    $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_NORIGHT);
+                    continue;
                 }
-            } else {
-                $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_NORIGHT);
+
+                if ($vip->getFromDB($id)) {
+                    $vip->update(["id" => $id, "isvip" => $isvip]);
+                } else {
+                    // The primary key mirrors glpi_groups.id (no auto-increment),
+                    // so the id must be provided explicitly on insert.
+                    $vip->add(["id" => $id, "isvip" => $isvip]);
+                }
+                $ma->itemDone($item->getType(), $id, MassiveAction::ACTION_OK);
             }
+        } else {
+            $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_NORIGHT);
         }
         return $ma;
     }

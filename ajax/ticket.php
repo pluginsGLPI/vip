@@ -29,12 +29,12 @@
 
 use GlpiPlugin\Vip\Ticket;
 
-Session::checkLoginUser();
-//Html::header_nocache();
+Session::checkRight('plugin_vip', READ);
 
-switch ($_POST['action']) {
+$action = $_POST['action'] ?? '';
+switch ($action) {
     case 'getTicket':
-        header('Content-Type: application/json; charset=UTF-8"');
+        header('Content-Type: application/json; charset=UTF-8');
 
         $params = [
             'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
@@ -67,7 +67,7 @@ switch ($_POST['action']) {
         echo json_encode($params);
         break;
     case 'getVIP':
-        header('Content-Type: application/json; charset=UTF-8"');
+        header('Content-Type: application/json; charset=UTF-8');
 
         $params = [
             'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
@@ -85,7 +85,7 @@ switch ($_POST['action']) {
         echo json_encode($params);
         break;
     case 'getPrinter':
-        header('Content-Type: application/json; charset=UTF-8"');
+        header('Content-Type: application/json; charset=UTF-8');
 
         $params = [
             'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
@@ -113,7 +113,7 @@ switch ($_POST['action']) {
         echo json_encode($params);
         break;
     case 'getComputer':
-        header('Content-Type: application/json; charset=UTF-8"');
+        header('Content-Type: application/json; charset=UTF-8');
 
         $params = [
             'entities_id' => (is_array($_SESSION['glpiactiveentities']) ? json_encode(
@@ -136,5 +136,10 @@ switch ($_POST['action']) {
             }
         }
         echo json_encode($params);
+        break;
+    default:
+        header('Content-Type: application/json; charset=UTF-8');
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid action']);
         break;
 }

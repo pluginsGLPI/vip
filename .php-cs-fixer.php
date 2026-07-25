@@ -27,26 +27,24 @@
  --------------------------------------------------------------------------
  */
 
-use Glpi\Exception\Http\AccessDeniedHttpException;
-use GlpiPlugin\Vip\Group;
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
 
-Session::checkRight("plugin_vip", UPDATE);
+$finder = Finder::create()
+    ->in(__DIR__)
+    ->name('*.php')
+    ->exclude('vendor')
+    ->exclude('tests/config')
+    ->ignoreVCSIgnored(true);
 
-$grp = new Group();
+$config = new Config();
 
-if (isset($_POST['update_vip_group'])) {
-    // The VIP group id matches a core glpi_groups id. That table carries the
-    // entity scope, so verify the user may access the target group's entity
-    // before writing (the VIP table itself has no entities_id column).
-    $groups_id  = (int) ($_POST['id'] ?? 0);
-    $core_group = new \Group();
-    if (
-        !$core_group->getFromDB($groups_id)
-        || !Session::haveAccessToEntity($core_group->getEntityID(), $core_group->isRecursive())
-    ) {
-        throw new AccessDeniedHttpException();
-    }
+$rules = [
+    '@PER-CS2.0'                  => true,
+    'trailing_comma_in_multiline' => ['elements' => ['arguments', 'array_destructuring', 'arrays']],
+];
 
-    $grp->update($_POST);
-    Html::back();
-}
+return $config
+    ->setRules($rules)
+    ->setFinder($finder)
+    ->setUsingCache(false);

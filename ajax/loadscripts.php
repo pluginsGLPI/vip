@@ -30,11 +30,12 @@
 use GlpiPlugin\Vip\Group;
 
 Html::header_nocache();
-Session::checkLoginUser();
+Session::checkRight('plugin_vip', READ);
 header("Content-Type: application/json; charset=UTF-8");
 
 global $CFG_GLPI;
-switch ($_POST['action']) {
+$action = $_POST['action'] ?? '';
+switch ($action) {
     case "load":
         $vip_group = new Group();
         $vip       = $vip_group->getVipUsers();
@@ -46,5 +47,9 @@ switch ($_POST['action']) {
         $params['emptyValue']              = Dropdown::EMPTY_VALUE;
 
         echo json_encode(['vip' => $vip, 'params' => $params], JSON_HEX_TAG);
+        break;
+    default:
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid action']);
         break;
 }

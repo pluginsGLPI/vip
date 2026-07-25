@@ -1,0 +1,421 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Rule\:\:showRulePreviewCriteriasForm\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^Method Rule\:\:showRulePreviewResultsForm\(\) invoked with 3 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^Parameter \#1 \$params of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) expects GlpiPlugin\\Vip\\parameters, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^Parameter \#2 \$params of method Rule\:\:prepareAllInputDataForProcess\(\) expects array, GlpiPlugin\\Vip\\parameters given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^Parameter \#2 \$withcriterias of method Rule\:\:getRuleWithCriteriasAndActions\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^Parameter \#3 \$withactions of method Rule\:\:getRuleWithCriteriasAndActions\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: front/rule.test.php
+
+		-
+			message: '#^Method RuleCollection\:\:showRulesEnginePreviewCriteriasForm\(\) invoked with 3 parameters, 1\-2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: front/rulesengine.test.php
+
+		-
+			message: '#^Method RuleCollection\:\:showRulesEnginePreviewResultsForm\(\) invoked with 3 parameters, 1\-2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: front/rulesengine.test.php
+
+		-
+			message: '#^Parameter \#2 \$condition of method RuleCollection\:\:showRulesEnginePreviewCriteriasForm\(\) expects int, array\<string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/rulesengine.test.php
+
+		-
+			message: '#^Parameter \#2 \$condition of method RuleCollection\:\:showRulesEnginePreviewResultsForm\(\) expects int, array\<mixed, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/rulesengine.test.php
+
+		-
+			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: front/rulesengine.test.php
+
+		-
+			message: '#^Class GlpiPlugin\\Vip\\RuleVipCollection constructor invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: front/rulevip.form.php
+
+		-
+			message: '#^Access to static property \$HELPDESK on an unknown class GlpiPlugin\\Mydashboard\\Menu\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Access to static property \$TABLE on an unknown class GlpiPlugin\\Mydashboard\\Widget\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to static method getWidgetsFromDBQuery\(\) on an unknown class GlpiPlugin\\Mydashboard\\Helper\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Mydashboard\\Html not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\Dashboard\:\:getWidgetsForItem\(\) has invalid return type array\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\Dashboard\:\:getWidgetsForItem\(\) should return array\<array\<array\>\> but returns array\<array\<string, array\<string, mixed\>\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Property GlpiPlugin\\Vip\\Dashboard\:\:\$datas is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Property GlpiPlugin\\Vip\\Dashboard\:\:\$form is unused\.$#'
+			identifier: property.unused
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Property GlpiPlugin\\Vip\\Dashboard\:\:\$options is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Default value of the parameter \#2 \$withtemplate \(int\) of method GlpiPlugin\\Vip\\Group\:\:getTabNameForItem\(\) is incompatible with type bool\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Default value of the parameter \#3 \$withtemplate \(int\) of method GlpiPlugin\\Vip\\Group\:\:displayTabContentForItem\(\) is incompatible with type bool\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Loose comparison using \=\= between int\<0, max\>\|false and \-1 will always evaluate to false\.$#'
+			identifier: equal.alwaysFalse
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\Group\:\:processMassiveActionsForOneItemtype\(\) with return type void returns MassiveAction but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\Group\:\:showForm\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Parameter \#2 \$withtemplate \(bool\) of method GlpiPlugin\\Vip\\Group\:\:getTabNameForItem\(\) should be compatible with parameter \$withtemplate \(int\) of method CommonGLPI\:\:getTabNameForItem\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Default value of the parameter \#1 \$all \(false\) of method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) is incompatible with type GlpiPlugin\\Vip\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Default value of the parameter \#2 \$openform \(true\) of method GlpiPlugin\\Vip\\Profile\:\:showForm\(\) is incompatible with type array\<string, mixed\>\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Default value of the parameter \#2 \$tabnum \(int\) of method GlpiPlugin\\Vip\\Profile\:\:displayTabContentForItem\(\) is incompatible with type GlpiPlugin\\Vip\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Default value of the parameter \#2 \$withtemplate \(int\) of method GlpiPlugin\\Vip\\Profile\:\:getTabNameForItem\(\) is incompatible with type GlpiPlugin\\Vip\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Default value of the parameter \#3 \$withtemplate \(int\) of method GlpiPlugin\\Vip\\Profile\:\:displayTabContentForItem\(\) is incompatible with type GlpiPlugin\\Vip\\type\.$#'
+			identifier: parameter.defaultValue
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\Profile\:\:showForm\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$ID$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$options$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \#1 \$all of method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) expects GlpiPlugin\\Vip\\type, true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \#1 \$all of static method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) expects GlpiPlugin\\Vip\\type, true given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \#2 \$withtemplate \(GlpiPlugin\\Vip\\type\) of method GlpiPlugin\\Vip\\Profile\:\:getTabNameForItem\(\) should be compatible with parameter \$withtemplate \(int\) of method Profile\:\:getTabNameForItem\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \$all of method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) has invalid type GlpiPlugin\\Vip\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \$tabnum of method GlpiPlugin\\Vip\\Profile\:\:displayTabContentForItem\(\) has invalid type GlpiPlugin\\Vip\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \$withtemplate of method GlpiPlugin\\Vip\\Profile\:\:displayTabContentForItem\(\) has invalid type GlpiPlugin\\Vip\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Parameter \$withtemplate of method GlpiPlugin\\Vip\\Profile\:\:getTabNameForItem\(\) has invalid type GlpiPlugin\\Vip\\type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Access to offset ''entities_id'' on an unknown class GlpiPlugin\\Vip\\parameters\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/RuleVip.php
+
+		-
+			message: '#^Access to offset ''groups_id'' on an unknown class GlpiPlugin\\Vip\\the\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Access to offset mixed on an unknown class GlpiPlugin\\Vip\\the\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) has invalid return type GlpiPlugin\\Vip\\parameters\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) has invalid return type GlpiPlugin\\Vip\\the\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:getTitle\(\) has invalid return type GlpiPlugin\\Vip\\translated\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:getTitle\(\) should return GlpiPlugin\\Vip\\translated but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Parameter \#1 \$output \(GlpiPlugin\\Vip\\the\) of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) should be compatible with parameter \$output \(array\) of method Rule\:\:executeActions\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Parameter \#1 \$params \(GlpiPlugin\\Vip\\parameters\) of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) should be compatible with parameter \$params \(array\) of method Rule\:\:addSpecificParamsForPreview\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Parameter \#2 \$params \(GlpiPlugin\\Vip\\parameters\) of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) should be compatible with parameter \$params \(array\) of method Rule\:\:executeActions\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Parameter \$output of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) has invalid type GlpiPlugin\\Vip\\the\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Parameter \$params of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) has invalid type GlpiPlugin\\Vip\\parameters\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Parameter \$params of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) has invalid type GlpiPlugin\\Vip\\parameters\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Return type \(GlpiPlugin\\Vip\\parameters\) of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) should be compatible with return type \(array\) of method Rule\:\:addSpecificParamsForPreview\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Return type \(GlpiPlugin\\Vip\\the\) of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) should be compatible with return type \(array\) of method Rule\:\:executeActions\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^Return type \(GlpiPlugin\\Vip\\translated\) of method GlpiPlugin\\Vip\\RuleVip\:\:getTitle\(\) should be compatible with return type \(string\) of method Rule\:\:getTitle\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/RuleVip.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/RuleVipCollection.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Ticket.php
+
+		-
+			message: '#^Class GlpiPlugin\\Vip\\RuleVipCollection constructor invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 2
+			path: src/Vip.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Vip.php

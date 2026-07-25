@@ -56,6 +56,29 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
             }
         }
 
+        // Build the VIP icon element using safe DOM APIs so the group name
+        // (free-text, user-controlled) can never break out of an attribute or
+        // inject markup. jQuery .attr()/.addClass()/.css() do not parse HTML.
+        function buildVipIcon(val, extra_css) {
+            var css = { 'color': val.color };
+            if (extra_css) {
+                $.extend(css, extra_css);
+            }
+            return $('<i></i>')
+                .addClass('ti')
+                .addClass(val.icon)
+                .attr('title', val.name)
+                .css(css);
+        }
+
+        // Wrap the icon between two non-breaking spaces (text nodes, never HTML).
+        function buildVipBadge(val, extra_css) {
+            return $('<span></span>')
+                .append(document.createTextNode(' '))
+                .append(buildVipIcon(val, extra_css))
+                .append(document.createTextNode(' '));
+        }
+
         this.changeRequesterColor = function (vip) {
             $(document).ready(function () {
 
@@ -94,7 +117,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                                     ) {
                                                         var userid = val.id;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
-                                                        $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
+                                                        $("span[data-items-id='" + userid + "']").after(buildVipBadge(val));
                                                     }
                                                 });
                                             });
@@ -115,7 +138,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
                                                     ) {
                                                         var userid = val.id;
                                                         $("span[data-items-id='" + userid + "']").css("color", val.color);
-                                                        $("span[data-items-id='" + userid + "']").after("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='color:" + val.color + "'></i>&nbsp;");
+                                                        $("span[data-items-id='" + userid + "']").after(buildVipBadge(val));
                                                     }
                                                 });
                                             });
@@ -161,7 +184,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
                                             });
                                             // $("span[id^='select2-dropdown_users_id']").css("color", val.color);
-                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
+                                            $("select[name='" + inputName + "']").before(buildVipBadge(val, {'font-family': '"Font Awesome 5 Free", "Font Awesome 5 Brands"'}));
                                         }
                                     });
                                 });
@@ -203,7 +226,7 @@ var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 
                                             });
                                             // $("span[id^='select2-dropdown_users_id']").css("color", val.color);
-                                            $("select[name='" + inputName + "']").before("&nbsp;<i class='ti " + val.icon + "' title=\"" + val.name + "\" style='font-family:\"Font Awesome 5 Free\", \"Font Awesome 5 Brands\";color:" + val.color + "'></i>&nbsp;");
+                                            $("select[name='" + inputName + "']").before(buildVipBadge(val, {'font-family': '"Font Awesome 5 Free", "Font Awesome 5 Brands"'}));
                                         }
                                     });
                                 });

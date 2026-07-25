@@ -1,0 +1,66 @@
+{#
+ -------------------------------------------------------------------------
+ vip plugin for GLPI
+ Copyright (C) 2022-2026 by the vip Development Team.
+
+ https://github.com/pluginsGLPI/vip
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of vip.
+
+ vip is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ vip is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with vip. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ #}
+
+<form action="{{ target }}" method="post">
+    <table class="tab_cadre_fixe">
+        <tr>
+            <th colspan="2" class="center b">{{ label_management }} : {{ group_name }}</th>
+        </tr>
+        <tr class="tab_bg_1">
+            <td>{{ label_name }}</td>
+            <td>{{ name_field|raw }}</td>
+        </tr>
+        <tr class="tab_bg_1">
+            <td>{{ label_isvip }}</td>
+            <td>{{ isvip_field|raw }}</td>
+        </tr>
+        <tr class="tab_bg_1">
+            <td>{{ label_color }}</td>
+            <td colspan="3">{{ color_field|raw }}</td>
+        </tr>
+        <tr class="tab_bg_1">
+            <td>{{ label_icon }}</td>
+            <td colspan="2">{{ icon_field|raw }}</td>
+        </tr>
+        {% if can_edit %}
+        <tr class="tab_bg_2">
+            <td class="center" colspan="2">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                {{ id_field|raw }}
+                {{ submit_field|raw }}
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</form>
+
+<script type="module">
+    import('/js/modules/Form/WebIconSelector.js').then((m) => {
+        const selector = new m.default(document.getElementById('{{ icon_selector_id|e('js') }}'));
+        selector.init();
+    });
+</script>

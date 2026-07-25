@@ -6,7 +6,7 @@ find . -name '*.php' > php_files.list
 # Extraction avec xgettext
 xgettext --files-from=php_files.list \
   --copyright-holder='VIP Development Team' \
-  --package-name='VIP - Accounts plugin' \
+  --package-name='VIP plugin' \
   -o locales/glpi.pot \
   -L PHP \
   --add-comments=TRANS \

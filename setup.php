@@ -60,7 +60,7 @@ function plugin_init_vip()
         Plugin::registerClass(Ticket::class);
     }
 
-    if (class_exists('PluginMydashboardMenu')) {
+    if (class_exists('PluginMydashboardMenu') && Session::haveRight('plugin_vip', READ)) {
         $PLUGIN_HOOKS['mydashboard']['vip'] = [Dashboard::class];
     }
 
@@ -78,7 +78,8 @@ function plugin_init_vip()
             }
         }
     }
-    if (isset($_SESSION["glpiactiveprofile"]["interface"])
+    if (Session::haveRight('plugin_vip', READ)
+    && isset($_SESSION["glpiactiveprofile"]["interface"])
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS['pre_show_item']['vip'] = [Ticket::class, 'showVIPInfos'];
     }

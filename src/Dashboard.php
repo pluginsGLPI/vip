@@ -34,6 +34,7 @@ use CommonITILActor;
 use CommonITILObject;
 use DBmysqlIterator;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Group_User;
 use Html;
 use GlpiPlugin\Mydashboard\Datatable;
@@ -76,6 +77,10 @@ class Dashboard extends CommonGLPI
     {
         global $DB;
 
+        if (!Session::haveRight('plugin_vip', READ)) {
+            return new MydashboardHtml();
+        }
+
         $dbu = new DbUtils();
         switch ($widgetId) {
             case $this->getType() . "1":
@@ -114,7 +119,8 @@ class Dashboard extends CommonGLPI
                     ],
                     'WHERE' => [
                         'glpi_tickets.is_deleted' => '0',
-                        'NOT' => ['glpi_tickets.status' => [CommonITILObject::INCOMING, CommonITILObject::SOLVED, CommonITILObject::CLOSED]]
+                        'NOT' => ['glpi_tickets.status' => [CommonITILObject::INCOMING, CommonITILObject::SOLVED, CommonITILObject::CLOSED]],
+                        getEntitiesRestrictCriteria('glpi_tickets'),
                     ],
                     'ORDER' => ['glpi_tickets.time_to_resolve' => 'DESC']
                 ];
@@ -161,60 +167,46 @@ class Dashboard extends CommonGLPI
 
                         $bgcolor = $_SESSION["glpipriority_" . $ticket->fields["priority"]];
 
-                        $name_ticket = "<div class='center' style='background-color:$bgcolor; padding: 10px;'>";
-                        $name_ticket .= "<a href='" . $link_ticket . "?id=" . $val['tickets_id'] . "' target='_blank'>";
-                        $name_ticket .= sprintf(__('%1$s: %2$s'), __('ID'), $val['tickets_id']);
-                        $name_ticket .= "</a>";
-                        $name_ticket .= "</div>";
+                        $datas[$i]["tickets_id"] = TemplateRenderer::getInstance()->render('@vip/dashboard_ticket_cell.html.twig', [
+                            'bgcolor'    => $bgcolor,
+                            'link'       => $link_ticket,
+                            'tickets_id' => $val['tickets_id'],
+                            'id_label'   => __('ID'),
+                        ]);
 
-
-                        $datas[$i]["tickets_id"] = $name_ticket;
-
-
-                        $userdata = '';
+                        $user_names = [];
                         if ($ticket->countUsers(CommonITILActor::REQUESTER)) {
                             foreach ($ticket->getUsers(CommonITILActor::REQUESTER) as $u) {
                                 $k = $u['users_id'];
                                 if ($k) {
-                                    $userdata .= $dbu->getUserName($k);
-                                }
-
-
-                                if ($ticket->countUsers(CommonITILActor::REQUESTER) > 1) {
-                                    $userdata .= "<br>";
+                                    $user_names[] = $dbu->getUserName($k);
                                 }
                             }
                         }
-                        $datas[$i]["users_id"] = $userdata;
+                        $datas[$i]["users_id"] = TemplateRenderer::getInstance()->render('@vip/dashboard_users_cell.html.twig', [
+                            'names' => $user_names,
+                        ]);
 
                         $datas[$i]["status"] = \Ticket::getStatus($val['status']);
 
-                        $time_to_resolve = '';
-                        $due             = strtotime(date('Y-m-d H:i:s')) - strtotime($val['time_to_resolve']);
-                        if ($due > 0) {
-                            $time_to_resolve .= "<div class='center red'>";
-                        }
-                        $time_to_resolve .= Html::convDateTime($val['time_to_resolve']);
-                        if ($due > 0) {
-                            $time_to_resolve .= "</div>";
-                        }
-                        $datas[$i]["time_to_resolve"] = $time_to_resolve;
+                        $due = strtotime(date('Y-m-d H:i:s')) - strtotime($val['time_to_resolve']);
+                        $datas[$i]["time_to_resolve"] = TemplateRenderer::getInstance()->render('@vip/dashboard_datetime_cell.html.twig', [
+                            'overdue'  => $due > 0,
+                            'datetime' => Html::convDateTime($val['time_to_resolve']),
+                        ]);
 
-                        $techdata = '';
+                        $tech_names = [];
                         if ($ticket->countUsers(CommonITILActor::ASSIGN)) {
                             foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
                                 $k = $u['users_id'];
                                 if ($k) {
-                                    $techdata .= getUserName($k);
-                                }
-
-
-                                if ($ticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                                    $techdata .= "<br>";
+                                    $tech_names[] = getUserName($k);
                                 }
                             }
                         }
-                        $datas[$i]["techs_id"] = $techdata;
+                        $datas[$i]["techs_id"] = TemplateRenderer::getInstance()->render('@vip/dashboard_users_cell.html.twig', [
+                            'names' => $tech_names,
+                        ]);
                         $i++;
                     }
                 }

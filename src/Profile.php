@@ -31,6 +31,7 @@ namespace GlpiPlugin\Vip;
 
 use CommonGLPI;
 use DbUtils;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use ProfileRight;
 use Session;
@@ -107,29 +108,27 @@ class Profile extends \Profile
      */
     public function showForm($profiles_id = 0, $openform = true, $closeform = true)
     {
-        echo "<div class='firstbloc'>";
-        if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
-            && $openform) {
-            $profile = new \Profile();
-            echo "<form method='post' action='" . $profile->getFormURL() . "'>";
-        }
+        $canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]);
 
         $profile = new \Profile();
         $profile->getFromDB($profiles_id);
 
         $rights = $this->getAllRights();
+        ob_start();
         $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
                                                            'default_class' => 'tab_bg_2',
                                                            'title'         => __('General')]);
-        if ($canedit
-            && $closeform) {
-            echo "<div class='center'>";
-            echo Html::hidden('id', ['value' => $profiles_id]);
-            echo Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']);
-            echo "</div>\n";
-            Html::closeForm();
-        }
-        echo "</div>";
+        $rights_matrix = ob_get_clean();
+
+        TemplateRenderer::getInstance()->display('@vip/profile.html.twig', [
+            'can_edit'      => $canedit,
+            'open_form'     => $openform,
+            'close_form'    => $closeform,
+            'form_action'   => $profile->getFormURL(),
+            'rights_matrix' => $rights_matrix,
+            'id_field'      => Html::hidden('id', ['value' => $profiles_id]),
+            'submit_field'  => Html::submit(_sx('button', 'Save'), ['name' => 'update', 'class' => 'btn btn-primary']),
+        ]);
 
         $this->showLegend();
     }

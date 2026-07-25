@@ -32,7 +32,9 @@ namespace GlpiPlugin\Vip;
 use CommonDBTM;
 use CommonITILActor;
 use Computer;
+use Glpi\Application\View\TemplateRenderer;
 use Printer;
+use Session;
 
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
@@ -91,16 +93,23 @@ class Ticket extends CommonDBTM
         $result = $DB->request([
             'SELECT' => ['glpi_groups_users.users_id'],
             'FROM' => 'glpi_groups_users',
-            'LEFT JOIN' => [
+            'INNER JOIN' => [
                 'glpi_plugin_vip_groups' => [
                     'ON' => [
                         'glpi_plugin_vip_groups' => 'id',
                         'glpi_groups_users' => 'groups_id'
                     ]
+                ],
+                'glpi_groups' => [
+                    'ON' => [
+                        'glpi_groups' => 'id',
+                        'glpi_groups_users' => 'groups_id'
+                    ]
                 ]
             ],
             'WHERE' => [
-                'glpi_plugin_vip_groups.isvip' => 1
+                'glpi_plugin_vip_groups.isvip' => 1,
+                getEntitiesRestrictCriteria('glpi_groups', '', '', true),
             ]
         ]);
         if (count($result) > 0) {
@@ -172,37 +181,42 @@ class Ticket extends CommonDBTM
      */
     public static function showVIPInfos($params)
     {
+        // VIP status is reserved to holders of the plugin_vip READ right, like
+        // the JavaScript badge injection gated in setup.php. Guard here too so
+        // the banner cannot leak VIP membership regardless of the caller.
+        if (!Session::haveRight('plugin_vip', READ)) {
+            return;
+        }
+
         $item = $params['item'];
 
-        if ($item != null && in_array($item->getType(), self::$types)) {
-            if ($item->getType() == 'Ticket') {
-                if ($id = self::isTicketVip($item->getID())) {
-                    $name = Group::getVipName($id);
-                    $icon = Group::getVipIcon($id);
-                    $color = Group::getVipColor($id);
-                    echo "<div class='alert alert-danger center'>";
-                    echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;color: $color'></i>&nbsp;";
-                    echo sprintf(__('%1$s %2$s'), __('This ticket concerns at least one', 'vip'), $name);
-                    echo "</div>";
-                }
-            } else {
-                if ($id = self::isUserVip($item->getField('users_id'))) {
-                    $color = Group::getVipColor($id);
-                    echo "<div class='alert alert-danger center'>";
-                    if ($item->getType() == 'Computer') {
-                        $name = Group::getVipName($id);
-                        $icon = Group::getVipIcon($id);
-                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;color: $color'></i>&nbsp;";
-                        echo sprintf(__('%1$s %2$s'), __('This computer is used by a', 'vip'), $name);
-                    } elseif ($item->getType() == 'Printer') {
-                        $name = Group::getVipName($id);
-                        $icon = Group::getVipIcon($id);
-                        echo "<i class='ti $icon' title=\"$name\" style='font-size:2em;color: $color'></i>&nbsp;";
-                        echo sprintf(__('%1$s %2$s'), __('This printer is used by a', 'vip'), $name);
-                    }
-                    echo "</div>";
-                }
+        if ($item === null || !in_array($item->getType(), self::$types, true)) {
+            return;
+        }
+
+        $id      = false;
+        $message = '';
+        if ($item->getType() == 'Ticket') {
+            if ($id = self::isTicketVip($item->getID())) {
+                $message = sprintf(__('%1$s %2$s'), __('This ticket concerns at least one', 'vip'), Group::getVipName($id));
+            }
+        } elseif ($id = self::isUserVip($item->getField('users_id'))) {
+            if ($item->getType() == 'Computer') {
+                $message = sprintf(__('%1$s %2$s'), __('This computer is used by a', 'vip'), Group::getVipName($id));
+            } elseif ($item->getType() == 'Printer') {
+                $message = sprintf(__('%1$s %2$s'), __('This printer is used by a', 'vip'), Group::getVipName($id));
             }
         }
+
+        if (!$id || $message === '') {
+            return;
+        }
+
+        TemplateRenderer::getInstance()->display('@vip/vip_infos.html.twig', [
+            'icon'    => Group::getVipIcon($id),
+            'name'    => Group::getVipName($id),
+            'color'   => Group::getVipColor($id),
+            'message' => $message,
+        ]);
     }
 }

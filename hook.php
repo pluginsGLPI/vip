@@ -219,10 +219,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num)
             switch ($table . '.' . $field) {
                 case "glpi_plugin_vip_groups.isvip":
                     if ($id = Ticket::isTicketVip($data["id"])) {
-                        $name = Group::getVipName($id);
-                        $color = Group::getVipColor($id);
-                        $icon = Group::getVipIcon($id);
-                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                        return Group::getVipBadge($id);
                     }
                     break;
             }
@@ -231,10 +228,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num)
             switch ($table . '.' . $field) {
                 case "glpi_plugin_vip_groups.isvip":
                     if ($id = Ticket::isPrinterVip($data["id"])) {
-                        $name = Group::getVipName($id);
-                        $color = Group::getVipColor($id);
-                        $icon = Group::getVipIcon($id);
-                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                        return Group::getVipBadge($id);
                     }
                     break;
             }
@@ -243,10 +237,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num)
             switch ($table . '.' . $field) {
                 case "glpi_plugin_vip_groups.isvip":
                     if ($id = Ticket::isComputerVip($data["id"])) {
-                        $name = Group::getVipName($id);
-                        $color = Group::getVipColor($id);
-                        $icon = Group::getVipIcon($id);
-                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                        return Group::getVipBadge($id);
                     }
                     break;
             }
@@ -255,10 +246,7 @@ function plugin_vip_giveItem($type, $ID, $data, $num)
             switch ($table . '.' . $field) {
                 case "glpi_plugin_vip_groups.isvip":
                     if ($data[$num][0]['name']) {
-                        $name = Group::getVipName($data["id"]);
-                        $color = Group::getVipColor($data["id"]);
-                        $icon = Group::getVipIcon($data["id"]);
-                        return "<i class='ti $icon' title=\"$name\" style='font-size:2em;color:$color'></i><p style='display:none'>1</p>";
+                        return Group::getVipBadge($data["id"]);
                     }
                     break;
             }
