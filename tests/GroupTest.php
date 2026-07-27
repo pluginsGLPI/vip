@@ -96,11 +96,32 @@ class GroupTest extends DbTestCase
 
         $group  = new Group();
         $result = $group->prepareInputForUpdate([
+            // The onerror attribute payload is dropped by the HTML-to-text
+            // conversion, leaving only the clean "ti-star" token, which is a
+            // valid Tabler-like icon class and therefore passes the allowlist
+            // check untouched (no fallback to the default icon).
+            'vip_icon' => '<img src=x onerror=alert(1)>ti-star',
+        ]);
+
+        $this->assertStringNotContainsString('onerror', $result['vip_icon']);
+        $this->assertSame('ti-star', $result['vip_icon']);
+    }
+
+    public function testPrepareInputForUpdateRejectsUnsafeIconAndFallsBackToDefault(): void
+    {
+        $this->login();
+
+        $group  = new Group();
+        $result = $group->prepareInputForUpdate([
+            // Once tags are stripped, the remaining text still contains
+            // characters outside the Tabler-like icon allowlist (parentheses),
+            // so the whole value must be rejected in favor of the safe default
+            // instead of persisting a partially-sanitized string.
             'vip_icon' => '<script>alert(1)</script>ti-star',
         ]);
 
         $this->assertStringNotContainsString('<script>', $result['vip_icon']);
-        $this->assertStringContainsString('ti-star', $result['vip_icon']);
+        $this->assertSame('ti-vip', $result['vip_icon']);
     }
 
     public function testGetVipGettersReturnStoredValues(): void

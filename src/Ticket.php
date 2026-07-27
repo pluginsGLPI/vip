@@ -80,7 +80,10 @@ class Ticket extends CommonDBTM
     }
 
     /**
-     * @param $entities
+     * @param int|int[]|string $entities Entity id, list of entity ids, or a JSON-encoded
+     *                                   list of entity ids (as sent by ajax/ticket.php).
+     *                                   Used to restrict the lookup to these entities
+     *                                   (and, for recursive groups, their sub-entities).
      *
      * @return array
      */
@@ -89,6 +92,16 @@ class Ticket extends CommonDBTM
         global $DB;
 
         $vip = [];
+
+        // ajax/ticket.php sends the caller's active entities as a JSON-encoded
+        // array; decode it so it can be used directly as the entities restriction
+        // value below (a raw scalar/array entity id is used as-is).
+        if (is_string($entities) && strlen($entities) > 0 && $entities[0] === '[') {
+            $decoded = json_decode($entities, true);
+            if (is_array($decoded)) {
+                $entities = $decoded;
+            }
+        }
 
         $result = $DB->request([
             'SELECT' => ['glpi_groups_users.users_id'],
@@ -109,7 +122,9 @@ class Ticket extends CommonDBTM
             ],
             'WHERE' => [
                 'glpi_plugin_vip_groups.isvip' => 1,
-                getEntitiesRestrictCriteria('glpi_groups', '', '', true),
+                // Restrict to the requested entities (falls back to the current
+                // session's active entities when $entities is empty).
+                getEntitiesRestrictCriteria('glpi_groups', '', $entities, true),
             ]
         ]);
         if (count($result) > 0) {
