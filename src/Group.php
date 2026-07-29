@@ -114,7 +114,7 @@ class Group extends CommonDBTM
             "glpi_dropdowntranslations"];
 
         foreach ($tables_glpi as $table_glpi) {
-            $DB->delete($table_glpi, ['itemtype' => ['LIKE' => Group::class]]);
+            $DB->delete($table_glpi, ['itemtype' => Group::class]);
         }
     }
 
