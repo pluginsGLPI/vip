@@ -25,6 +25,6 @@
  # --------------------------------------------------------------------------
  #}
 
-<div class="center" style="background-color:{{ bgcolor }}; padding: 10px;">
+<div class="center" style="background-color:{{ bgcolor|e('css') }}; padding: 10px;">
     <a href="{{ link }}?id={{ tickets_id }}" target="_blank">{{ id_label }}: {{ tickets_id }}</a>
 </div>
