@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- vip plugin for GLPI
- Copyright (C) 2022-2026 by the vip Development Team.
-
- https://github.com/pluginsGLPI/vip
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of vip.
-
- vip is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- vip is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with vip. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * vip plugin for GLPI
+ * Copyright (C) 2022-2026 by the vip Development Team.
+ *
+ * https://github.com/pluginsGLPI/vip
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of vip.
+ *
+ * vip is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * vip is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vip. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use GlpiPlugin\Vip\RuleVip;
@@ -36,17 +36,17 @@ $raw_type = $_POST["sub_type"] ?? $_GET["sub_type"] ?? '';
 $sub_type = in_array($raw_type, $allowed_types, true) ? $raw_type : '';
 
 if (isset($_POST["rules_id"])) {
-   $rules_id = $_POST["rules_id"];
-} else if (isset($_GET["rules_id"])) {
-   $rules_id = $_GET["rules_id"];
+    $rules_id = $_POST["rules_id"];
+} elseif (isset($_GET["rules_id"])) {
+    $rules_id = $_GET["rules_id"];
 } else {
-   $rules_id = 0;
+    $rules_id = 0;
 }
 
 $dbu = new DbUtils();
 
 if (!$sub_type || !$rule = $dbu->getItemForItemtype($sub_type)) {
-   exit;
+    exit;
 }
 $rule->checkGlobal(READ);
 
@@ -54,27 +54,28 @@ $test_rule_output = null;
 
 Html::popHeader(__('Setup'), $_SERVER['PHP_SELF']);
 
-$rule->showRulePreviewCriteriasForm($_SERVER['PHP_SELF'], $rules_id);
+// GLPI 11 dropped the leading $target argument; the core resolves the form URL itself.
+$rule->showRulePreviewCriteriasForm($rules_id);
 
 if (isset($_POST["test_rule"])) {
-   $params = [];
-   //Unset values that must not be processed by the rule
-   unset($_POST["test_rule"]);
-   unset($_POST["rules_id"]);
-   unset($_POST["sub_type"]);
-   $rule->getRuleWithCriteriasAndActions($rules_id, 1, 1);
+    $params = [];
+    //Unset values that must not be processed by the rule
+    unset($_POST["test_rule"]);
+    unset($_POST["rules_id"]);
+    unset($_POST["sub_type"]);
+    $rule->getRuleWithCriteriasAndActions($rules_id, 1, 1);
 
-   // Need for RuleEngines
-   foreach ($_POST as $key => $val) {
-      $_POST[$key] = stripslashes($_POST[$key]);
-   }
-   //Add rules specific POST fields to the param array
-   $params = $rule->addSpecificParamsForPreview($params);
+    // Need for RuleEngines
+    foreach ($_POST as $key => $val) {
+        $_POST[$key] = stripslashes($_POST[$key]);
+    }
+    //Add rules specific POST fields to the param array
+    $params = $rule->addSpecificParamsForPreview($params);
 
-   $input = $rule->prepareAllInputDataForProcess($_POST, $params);
-   //$rule->regex_results = [];
-   echo "<br>";
-   $rule->showRulePreviewResultsForm($_SERVER['PHP_SELF'], $input, $params);
+    $input = $rule->prepareAllInputDataForProcess($_POST, $params);
+    //$rule->regex_results = [];
+    echo "<br>";
+    $rule->showRulePreviewResultsForm($input, $params);
 }
 
 Html::popFooter();

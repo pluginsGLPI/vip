@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- vip plugin for GLPI
- Copyright (C) 2022-2026 by the vip Development Team.
-
- https://github.com/pluginsGLPI/vip
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of vip.
-
- vip is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- vip is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with vip. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * vip plugin for GLPI
+ * Copyright (C) 2022-2026 by the vip Development Team.
+ *
+ * https://github.com/pluginsGLPI/vip
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of vip.
+ *
+ * vip is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * vip is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vip. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Plugin\Hooks;
@@ -68,7 +68,7 @@ function plugin_init_vip()
     && isset($_SESSION["glpiactiveprofile"]["interface"])
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip.js.php';
-//        $PLUGIN_HOOKS["javascript"]['vip']     = [PLUGIN_VIP_NOTFULL_DIR."/js/vip.js.php"];
+        //        $PLUGIN_HOOKS["javascript"]['vip']     = [PLUGIN_VIP_NOTFULL_DIR."/js/vip.js.php"];
 
         if (class_exists(Ticket::class)) {
             foreach (Ticket::$types as $item) {
@@ -87,28 +87,28 @@ function plugin_init_vip()
     $PLUGIN_HOOKS[Hooks::ITEM_UPDATE]['vip'] = ['User' => [Vip::class, 'afterUpdate']];
 
     Plugin::registerClass(RuleVipCollection::class, [
-       'rulecollections_types' => true
+        'rulecollections_types' => true,
     ]);
 
     // Cannot be placed inside any permission check as the plugin is initialized before the API router authenticates the user
     //TODO activate in GLPI 11 version
-//    $PLUGIN_HOOKS[Hooks::REDEFINE_API_SCHEMAS]['vip'] = 'plugin_vip_redefine_api_schemas';
+    //    $PLUGIN_HOOKS[Hooks::REDEFINE_API_SCHEMAS]['vip'] = 'plugin_vip_redefine_api_schemas';
 }
 
 function plugin_version_vip()
 {
 
     return ['name'           => "VIP",
-           'version'        => PLUGIN_VIP_VERSION,
-           'author'         => '<a href="http://www.probesys.com">Probesys</a> & <a href="https//blogglpi.infotel.com">Infotel</a>, Xavier CAILLAUD',
-           'license'        => 'AGPLv3+',
-           'homepage'       => 'https://github.com/pluginsGLPI/vip',
-           'requirements'   => [
-              'glpi' => [
-                 'min' => '11.0',
-                 'max' => '12.0',
-                 'dev' => false
-              ]
-           ]
+        'version'        => PLUGIN_VIP_VERSION,
+        'author'         => '<a href="http://www.probesys.com">Probesys</a> & <a href="https//blogglpi.infotel.com">Infotel</a>, Xavier CAILLAUD',
+        'license'        => 'AGPLv3+',
+        'homepage'       => 'https://github.com/pluginsGLPI/vip',
+        'requirements'   => [
+            'glpi' => [
+                'min' => '11.0',
+                'max' => '12.0',
+                'dev' => false,
+            ],
+        ],
     ];
 }

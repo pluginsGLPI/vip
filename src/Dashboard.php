@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- vip plugin for GLPI
- Copyright (C) 2022-2026 by the vip Development Team.
-
- https://github.com/pluginsGLPI/vip
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of vip.
-
- vip is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- vip is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with vip. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * vip plugin for GLPI
+ * Copyright (C) 2022-2026 by the vip Development Team.
+ *
+ * https://github.com/pluginsGLPI/vip
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of vip.
+ *
+ * vip is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * vip is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vip. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Vip;
@@ -57,16 +57,16 @@ class Dashboard extends CommonGLPI
         $this->options = $_options;
     }
 
-     /**
-      * @return \array[][]
-      */
+    /**
+     * @return \array[][]
+     */
     public function getWidgetsForItem()
     {
         $widgets = [
             Menu::$HELPDESK => [
                 $this->getType() . "1" => ["title"   => __("Tickets VIP", "mydashboard"),
-                                           "type"    => Widget::$TABLE,
-                                           "comment" => ""],
+                    "type"    => Widget::$TABLE,
+                    "comment" => ""],
             ],
         ];
 
@@ -96,33 +96,33 @@ class Dashboard extends CommonGLPI
 
                 $criteria = [
                     'SELECT' => [
-                        'glpi_tickets.id AS tickets_id', 'glpi_tickets.status AS status', 'glpi_tickets.time_to_resolve AS time_to_resolve'
+                        'glpi_tickets.id AS tickets_id', 'glpi_tickets.status AS status', 'glpi_tickets.time_to_resolve AS time_to_resolve',
                     ],
                     'FROM' => 'glpi_tickets',
                     'LEFT JOIN' => [
                         'glpi_entities' => [
                             'ON' => [
                                 'glpi_tickets' => 'entities_id',
-                                'glpi_entities' => 'id'
-                            ]
+                                'glpi_entities' => 'id',
+                            ],
                         ],
                         'glpi_groups_tickets' => [
                             'ON' => [
                                 'glpi_tickets' => 'id',
                                 'glpi_groups_tickets' => 'tickets_id', [
                                     'AND' => [
-                                        'glpi_groups_tickets.type' => CommonITILActor::ASSIGN
-                                    ]
-                                ]
-                            ]
-                        ]
+                                        'glpi_groups_tickets.type' => CommonITILActor::ASSIGN,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                     'WHERE' => [
                         'glpi_tickets.is_deleted' => '0',
                         'NOT' => ['glpi_tickets.status' => [CommonITILObject::INCOMING, CommonITILObject::SOLVED, CommonITILObject::CLOSED]],
                         getEntitiesRestrictCriteria('glpi_tickets'),
                     ],
-                    'ORDER' => ['glpi_tickets.time_to_resolve' => 'DESC']
+                    'ORDER' => ['glpi_tickets.time_to_resolve' => 'DESC'],
                 ];
                 if (count($groups) > 0) {
                     $criteria['WHERE']['glpi_groups_tickets.groups_id'] = $groups;
@@ -131,10 +131,10 @@ class Dashboard extends CommonGLPI
                 $it->buildQuery($criteria);
                 $widget  = Helper::getWidgetsFromDBQuery('table', $it->getSql());
                 $headers = [__('ID'),
-                            _n('Requester', 'Requesters', 2),
-                            __('Status'),
-                            __('Time to resolve'),
-                            __('Assigned to technicians')];
+                    _n('Requester', 'Requesters', 2),
+                    __('Status'),
+                    __('Time to resolve'),
+                    __('Assigned to technicians')];
                 $widget->setTabNames($headers);
 
                 $result = $DB->request($criteria);
@@ -179,7 +179,7 @@ class Dashboard extends CommonGLPI
                             foreach ($ticket->getUsers(CommonITILActor::REQUESTER) as $u) {
                                 $k = $u['users_id'];
                                 if ($k) {
-                                    $user_names[] = $dbu->getUserName($k);
+                                    $user_names[] = getUserName($k);
                                 }
                             }
                         }
@@ -212,7 +212,7 @@ class Dashboard extends CommonGLPI
                 }
 
                 $widget->setTabDatas($datas);
-//            $widget->setOption("bSort", false);
+                //            $widget->setOption("bSort", false);
                 $widget->toggleWidgetRefresh();
 
                 $widget->setWidgetTitle(__("Tickets VIP", "mydashboard"));

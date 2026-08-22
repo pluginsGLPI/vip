@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- vip plugin for GLPI
- Copyright (C) 2022-2026 by the vip Development Team.
-
- https://github.com/pluginsGLPI/vip
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of vip.
-
- vip is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- vip is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with vip. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * vip plugin for GLPI
+ * Copyright (C) 2022-2026 by the vip Development Team.
+ *
+ * https://github.com/pluginsGLPI/vip
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of vip.
+ *
+ * vip is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * vip is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vip. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Vip;
@@ -47,7 +47,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class Profile extends \Profile
 {
-
     public static function getIcon()
     {
         return "ti ti-vip";
@@ -90,7 +89,7 @@ class Profile extends \Profile
 
             self::addDefaultProfileInfos(
                 $ID,
-                ['plugin_vip' => 0]
+                ['plugin_vip' => 0],
             );
             $prof->showForm($ID);
         }
@@ -116,8 +115,8 @@ class Profile extends \Profile
         $rights = $this->getAllRights();
         ob_start();
         $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-                                                           'default_class' => 'tab_bg_2',
-                                                           'title'         => __('General')]);
+            'default_class' => 'tab_bg_2',
+            'title'         => __('General')]);
         $rights_matrix = ob_get_clean();
 
         TemplateRenderer::getInstance()->display('@vip/profile.html.twig', [
@@ -136,17 +135,15 @@ class Profile extends \Profile
     /**
      * Get all rights
      *
-     * @param type $all
-     *
      * @return array
      */
-    public static function getAllRights($all = false)
+    public static function getAllRights()
     {
         $rights = [
-           ['itemtype' => Group::class,
-                 'label'    => __('VIP', 'vip'),
-                 'field'    => 'plugin_vip'
-           ]
+            ['itemtype' => Group::class,
+                'label'    => __('VIP', 'vip'),
+                'field'    => 'plugin_vip',
+            ],
         ];
 
         return $rights;
@@ -190,7 +187,7 @@ class Profile extends \Profile
 
         $it = $DB->request([
             'FROM' => 'glpi_plugin_vip_profiles',
-            'WHERE' => ['profiles_id' => $profiles_id]
+            'WHERE' => ['profiles_id' => $profiles_id],
         ]);
         foreach ($it as $profile_data) {
             $matching       = ['show_vip_tab' => 'plugin_vip'];
@@ -209,7 +206,7 @@ class Profile extends \Profile
 
                     $DB->update('glpi_profilerights', ['rights' => $right], [
                         'name'        => $new,
-                        'profiles_id' => $profiles_id
+                        'profiles_id' => $profiles_id,
                     ]);
                 }
             }
@@ -225,10 +222,10 @@ class Profile extends \Profile
         $profile = new self();
         $dbu = new DbUtils();
         //Add new rights in glpi_profilerights table
-        foreach ($profile->getAllRights(true) as $data) {
+        foreach ($profile->getAllRights() as $data) {
             if ($dbu->countElementsInTable(
                 "glpi_profilerights",
-                ["name" => $data['field']]
+                ["name" => $data['field']],
             ) == 0) {
                 ProfileRight::addProfileRights([$data['field']]);
             }
@@ -237,7 +234,7 @@ class Profile extends \Profile
         //Migration old rights in new ones
         $it = $DB->request([
             'SELECT' => ['id'],
-            'FROM' => 'glpi_profiles'
+            'FROM' => 'glpi_profiles',
         ]);
         foreach ($it as $prof) {
             self::migrateOneProfile($prof['id']);
@@ -246,8 +243,8 @@ class Profile extends \Profile
             'FROM' => 'glpi_profilerights',
             'WHERE' => [
                 'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
-                'name' => ['LIKE', '%plugin_vip%']
-            ]
+                'name' => ['LIKE', '%plugin_vip%'],
+            ],
         ]);
         foreach ($it as $prof) {
             if (isset($_SESSION['glpiactiveprofile'])) {
@@ -267,8 +264,8 @@ class Profile extends \Profile
             'FROM' => 'glpi_profilerights',
             'WHERE' => [
                 'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
-                'name' => ['LIKE', '%plugin_vip%']
-            ]
+                'name' => ['LIKE', '%plugin_vip%'],
+            ],
         ]);
         foreach ($it as $prof) {
             $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
@@ -282,7 +279,7 @@ class Profile extends \Profile
         self::addDefaultProfileInfos(
             $profiles_id,
             $rights,
-            true
+            true,
         );
     }
 
@@ -297,14 +294,14 @@ class Profile extends \Profile
             if ($dbu->countElementsInTable(
                 'glpi_profilerights',
                 ["profiles_id" => $profiles_id,
-                 "name"        => $right]
+                    "name"        => $right],
             ) && $drop_existing) {
                 $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
             }
             if (!$dbu->countElementsInTable(
                 'glpi_profilerights',
                 ["profiles_id" => $profiles_id,
-                 "name"        => $right]
+                    "name"        => $right],
             )) {
                 $myright['profiles_id'] = $profiles_id;
                 $myright['name']        = $right;
@@ -319,7 +316,7 @@ class Profile extends \Profile
 
     public static function removeRightsFromSession()
     {
-        foreach (self::getAllRights(true) as $right) {
+        foreach (self::getAllRights() as $right) {
             if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
                 unset($_SESSION['glpiactiveprofile'][$right['field']]);
             }

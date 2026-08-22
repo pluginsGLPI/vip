@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- vip plugin for GLPI
- Copyright (C) 2022-2026 by the vip Development Team.
-
- https://github.com/pluginsGLPI/vip
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of vip.
-
- vip is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- vip is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with vip. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * vip plugin for GLPI
+ * Copyright (C) 2022-2026 by the vip Development Team.
+ *
+ * https://github.com/pluginsGLPI/vip
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of vip.
+ *
+ * vip is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * vip is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vip. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Vip;
@@ -62,14 +62,14 @@ class Ticket extends CommonDBTM
                     'glpi_plugin_vip_groups' => [
                         'ON' => [
                             'glpi_plugin_vip_groups' => 'id',
-                            'glpi_groups_users' => 'groups_id'
-                        ]
-                    ]
+                            'glpi_groups_users' => 'groups_id',
+                        ],
+                    ],
                 ],
                 'WHERE' => [
                     'glpi_plugin_vip_groups.isvip' => 1,
-                    'glpi_groups_users.users_id' => $uid
-                ]
+                    'glpi_groups_users.users_id' => $uid,
+                ],
             ]);
             if (count($result) > 0) {
                 return $result->current()['id'];
@@ -110,22 +110,22 @@ class Ticket extends CommonDBTM
                 'glpi_plugin_vip_groups' => [
                     'ON' => [
                         'glpi_plugin_vip_groups' => 'id',
-                        'glpi_groups_users' => 'groups_id'
-                    ]
+                        'glpi_groups_users' => 'groups_id',
+                    ],
                 ],
                 'glpi_groups' => [
                     'ON' => [
                         'glpi_groups' => 'id',
-                        'glpi_groups_users' => 'groups_id'
-                    ]
-                ]
+                        'glpi_groups_users' => 'groups_id',
+                    ],
+                ],
             ],
             'WHERE' => [
                 'glpi_plugin_vip_groups.isvip' => 1,
                 // Restrict to the requested entities (falls back to the current
                 // session's active entities when $entities is empty).
                 getEntitiesRestrictCriteria('glpi_groups', '', $entities, true),
-            ]
+            ],
         ]);
         if (count($result) > 0) {
             foreach ($result as $uids) {
@@ -150,8 +150,8 @@ class Ticket extends CommonDBTM
                 'FROM' => 'glpi_tickets_users',
                 'WHERE' => [
                     'type' => CommonITILActor::REQUESTER,
-                    'tickets_id' => $ticketid
-                ]
+                    'tickets_id' => $ticketid,
+                ],
             ]);
             if (count($userresult) > 0) {
                 foreach ($userresult as $uids) {

@@ -1,28 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method Rule\:\:showRulePreviewCriteriasForm\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
+			message: '#^You should not use the `http_response_code` function to change the response code\. Due to a PHP bug, it may not provide the expected result \(see https\://bugs\.php\.net/bug\.php\?id\=81451\)\.$#'
+			identifier: glpi.forbidHttpResponseCode
 			count: 1
-			path: front/rule.test.php
+			path: ajax/loadscripts.php
 
 		-
-			message: '#^Method Rule\:\:showRulePreviewResultsForm\(\) invoked with 3 parameters, 2 required\.$#'
-			identifier: arguments.count
+			message: '#^You should not use the `http_response_code` function to change the response code\. Due to a PHP bug, it may not provide the expected result \(see https\://bugs\.php\.net/bug\.php\?id\=81451\)\.$#'
+			identifier: glpi.forbidHttpResponseCode
 			count: 1
-			path: front/rule.test.php
-
-		-
-			message: '#^Parameter \#1 \$params of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) expects GlpiPlugin\\Vip\\parameters, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: front/rule.test.php
-
-		-
-			message: '#^Parameter \#2 \$params of method Rule\:\:prepareAllInputDataForProcess\(\) expects array, GlpiPlugin\\Vip\\parameters given\.$#'
-			identifier: argument.type
-			count: 1
-			path: front/rule.test.php
+			path: ajax/ticket.php
 
 		-
 			message: '#^Parameter \#2 \$withcriterias of method Rule\:\:getRuleWithCriteriasAndActions\(\) expects bool, int given\.$#'
@@ -43,30 +31,6 @@ parameters:
 			path: front/rule.test.php
 
 		-
-			message: '#^Method RuleCollection\:\:showRulesEnginePreviewCriteriasForm\(\) invoked with 3 parameters, 1\-2 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: front/rulesengine.test.php
-
-		-
-			message: '#^Method RuleCollection\:\:showRulesEnginePreviewResultsForm\(\) invoked with 3 parameters, 1\-2 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: front/rulesengine.test.php
-
-		-
-			message: '#^Parameter \#2 \$condition of method RuleCollection\:\:showRulesEnginePreviewCriteriasForm\(\) expects int, array\<string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: front/rulesengine.test.php
-
-		-
-			message: '#^Parameter \#2 \$condition of method RuleCollection\:\:showRulesEnginePreviewResultsForm\(\) expects int, array\<mixed, string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: front/rulesengine.test.php
-
-		-
 			message: '#^You should not use the `exit` function\. It prevents the execution of post\-request/post\-command routines\.$#'
 			identifier: glpi.forbidExit
 			count: 1
@@ -77,6 +41,12 @@ parameters:
 			identifier: arguments.count
 			count: 1
 			path: front/rulevip.form.php
+
+		-
+			message: '#^Parameter \#1 \$id of static method GlpiPlugin\\Vip\\Group\:\:getVipBadge\(\) expects int, true given\.$#'
+			identifier: argument.type
+			count: 3
+			path: hook.php
 
 		-
 			message: '#^Access to static property \$HELPDESK on an unknown class GlpiPlugin\\Mydashboard\\Menu\.$#'
@@ -99,7 +69,7 @@ parameters:
 		-
 			message: '#^Instantiated class GlpiPlugin\\Mydashboard\\Html not found\.$#'
 			identifier: class.notFound
-			count: 1
+			count: 2
 			path: src/Dashboard.php
 
 		-
@@ -139,7 +109,19 @@ parameters:
 			path: src/Dashboard.php
 
 		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getEntityID\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Group.php
+
+		-
 			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Group.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:isRecursive\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: src/Group.php
@@ -153,12 +135,6 @@ parameters:
 		-
 			message: '#^Default value of the parameter \#3 \$withtemplate \(int\) of method GlpiPlugin\\Vip\\Group\:\:displayTabContentForItem\(\) is incompatible with type bool\.$#'
 			identifier: parameter.defaultValue
-			count: 1
-			path: src/Group.php
-
-		-
-			message: '#^Loose comparison using \=\= between int\<0, max\>\|false and \-1 will always evaluate to false\.$#'
-			identifier: equal.alwaysFalse
 			count: 1
 			path: src/Group.php
 
@@ -195,12 +171,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method CommonGLPI\:\:getID\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: src/Profile.php
-
-		-
-			message: '#^Default value of the parameter \#1 \$all \(false\) of method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) is incompatible with type GlpiPlugin\\Vip\\type\.$#'
-			identifier: parameter.defaultValue
 			count: 1
 			path: src/Profile.php
 
@@ -247,26 +217,8 @@ parameters:
 			path: src/Profile.php
 
 		-
-			message: '#^Parameter \#1 \$all of method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) expects GlpiPlugin\\Vip\\type, true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Profile.php
-
-		-
-			message: '#^Parameter \#1 \$all of static method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) expects GlpiPlugin\\Vip\\type, true given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Profile.php
-
-		-
 			message: '#^Parameter \#2 \$withtemplate \(GlpiPlugin\\Vip\\type\) of method GlpiPlugin\\Vip\\Profile\:\:getTabNameForItem\(\) should be compatible with parameter \$withtemplate \(int\) of method Profile\:\:getTabNameForItem\(\)$#'
 			identifier: method.childParameterType
-			count: 1
-			path: src/Profile.php
-
-		-
-			message: '#^Parameter \$all of method GlpiPlugin\\Vip\\Profile\:\:getAllRights\(\) has invalid type GlpiPlugin\\Vip\\type\.$#'
-			identifier: class.notFound
 			count: 1
 			path: src/Profile.php
 
@@ -295,98 +247,14 @@ parameters:
 			path: src/Profile.php
 
 		-
-			message: '#^Access to offset ''entities_id'' on an unknown class GlpiPlugin\\Vip\\parameters\.$#'
-			identifier: class.notFound
-			count: 2
-			path: src/RuleVip.php
-
-		-
-			message: '#^Access to offset ''groups_id'' on an unknown class GlpiPlugin\\Vip\\the\.$#'
-			identifier: class.notFound
+			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     ", expected type at offset 48 on line 4$#'
+			identifier: phpDoc.parseError
 			count: 1
 			path: src/RuleVip.php
 
 		-
-			message: '#^Access to offset mixed on an unknown class GlpiPlugin\\Vip\\the\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) has invalid return type GlpiPlugin\\Vip\\parameters\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) has invalid return type GlpiPlugin\\Vip\\the\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:getTitle\(\) has invalid return type GlpiPlugin\\Vip\\translated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Method GlpiPlugin\\Vip\\RuleVip\:\:getTitle\(\) should return GlpiPlugin\\Vip\\translated but returns string\.$#'
-			identifier: return.type
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Parameter \#1 \$output \(GlpiPlugin\\Vip\\the\) of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) should be compatible with parameter \$output \(array\) of method Rule\:\:executeActions\(\)$#'
-			identifier: method.childParameterType
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Parameter \#1 \$params \(GlpiPlugin\\Vip\\parameters\) of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) should be compatible with parameter \$params \(array\) of method Rule\:\:addSpecificParamsForPreview\(\)$#'
-			identifier: method.childParameterType
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Parameter \#2 \$params \(GlpiPlugin\\Vip\\parameters\) of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) should be compatible with parameter \$params \(array\) of method Rule\:\:executeActions\(\)$#'
-			identifier: method.childParameterType
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Parameter \$output of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) has invalid type GlpiPlugin\\Vip\\the\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Parameter \$params of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) has invalid type GlpiPlugin\\Vip\\parameters\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Parameter \$params of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) has invalid type GlpiPlugin\\Vip\\parameters\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Return type \(GlpiPlugin\\Vip\\parameters\) of method GlpiPlugin\\Vip\\RuleVip\:\:addSpecificParamsForPreview\(\) should be compatible with return type \(array\) of method Rule\:\:addSpecificParamsForPreview\(\)$#'
-			identifier: method.childReturnType
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Return type \(GlpiPlugin\\Vip\\the\) of method GlpiPlugin\\Vip\\RuleVip\:\:executeActions\(\) should be compatible with return type \(array\) of method Rule\:\:executeActions\(\)$#'
-			identifier: method.childReturnType
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^Return type \(GlpiPlugin\\Vip\\translated\) of method GlpiPlugin\\Vip\\RuleVip\:\:getTitle\(\) should be compatible with return type \(string\) of method Rule\:\:getTitle\(\)$#'
-			identifier: method.childReturnType
+			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     \* ", expected type at offset 71 on line 5$#'
+			identifier: phpDoc.parseError
 			count: 1
 			path: src/RuleVip.php
 

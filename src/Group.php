@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- vip plugin for GLPI
- Copyright (C) 2022-2026 by the vip Development Team.
-
- https://github.com/pluginsGLPI/vip
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of vip.
-
- vip is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
-
- vip is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with vip. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * vip plugin for GLPI
+ * Copyright (C) 2022-2026 by the vip Development Team.
+ *
+ * https://github.com/pluginsGLPI/vip
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of vip.
+ *
+ * vip is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * vip is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vip. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 namespace GlpiPlugin\Vip;
@@ -78,7 +78,7 @@ class Group extends CommonDBTM
             $DB->insert(
                 $table,
                 ['id' => 0,
-                    'isvip' => 0]
+                    'isvip' => 0],
             );
         }
 
@@ -158,7 +158,7 @@ class Group extends CommonDBTM
                     'id'       => $icon_selector_id,
                     'selected' => $this->fields['vip_icon'],
                     'style'    => 'width:175px;',
-                ]
+                ],
             ),
             'can_edit'          => $canedit,
             'id_field'          => Html::hidden('id', ['value' => $id]),
@@ -222,13 +222,19 @@ class Group extends CommonDBTM
             $grp = new self();
             $ID  = $item->getField('id');
             if (!$grp->getFromDB($ID)) {
-                $grp->add(['id' => $ID]);
+                // Creating the default VIP row is a write triggered on a rendering path
+                // (AJAX/GET tab load): re-check the UPDATE right and entity access here
+                // instead of relying solely on getTabNameForItem(), so a regression or a
+                // direct call can never INSERT without authorization.
+                if (Session::haveRight('plugin_vip', UPDATE)
+                    && Session::haveAccessToEntity($item->getEntityID(), $item->isRecursive())) {
+                    $grp->add(['id' => $ID]);
+                }
             }
             $grp->showForm($ID);
         }
         return true;
     }
-
 
     /**
      * @return array
@@ -312,7 +318,7 @@ class Group extends CommonDBTM
      */
     public function massiveActions()
     {
-        return [Group::class.":isvip" => __('Update') . " " . __('VIP group', 'vip')];
+        return [Group::class . ":isvip" => __('Update') . " " . __('VIP group', 'vip')];
     }
 
     /**
