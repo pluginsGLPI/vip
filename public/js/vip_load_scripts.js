@@ -1,5 +1,3 @@
-<?php
-
 /**
  * -------------------------------------------------------------------------
  * vip plugin for GLPI
@@ -27,10 +25,12 @@
  * --------------------------------------------------------------------------
  */
 
-header('Content-Type: text/javascript');
-?>
+// Plugin web root, mirroring PLUGIN_VIP_WEBDIR from setup.php. GLPI exposes
+// both variables in the page <head> (config_js) before any plugin script is
+// loaded, so no server-side interpolation is needed here.
+var root_vip_doc = ((window.CFG_GLPI && CFG_GLPI.root_doc) || '')
+   + ((window.GLPI_PLUGINS_PATH && GLPI_PLUGINS_PATH.vip) || '/plugins/vip');
 
-var root_vip_doc = "<?php echo PLUGIN_VIP_WEBDIR; ?>";
 (function ($) {
 
     $.fn.vip_load_scripts = function () {
