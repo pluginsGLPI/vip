@@ -67,13 +67,12 @@ function plugin_init_vip()
     if (Session::haveRight('plugin_vip', READ)
     && isset($_SESSION["glpiactiveprofile"]["interface"])
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
-        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip.js.php';
-        //        $PLUGIN_HOOKS["javascript"]['vip']     = [PLUGIN_VIP_NOTFULL_DIR."/js/vip.js.php"];
+        $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip.js';
 
         if (class_exists(Ticket::class)) {
             foreach (Ticket::$types as $item) {
                 if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], strtolower($item) . ".form.php") !== false) {
-                    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip_load_scripts.js.php';
+                    $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip_load_scripts.js';
                 }
             }
         }
