@@ -61,7 +61,31 @@ parameters:
 			path: src/Dashboard.php
 
 		-
-			message: '#^Call to static method getWidgetsFromDBQuery\(\) on an unknown class GlpiPlugin\\Mydashboard\\Helper\.$#'
+			message: '#^Call to method setTabDatas\(\) on an unknown class GlpiPlugin\\Mydashboard\\Datatable\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method setTabNames\(\) on an unknown class GlpiPlugin\\Mydashboard\\Datatable\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method setWidgetTitle\(\) on an unknown class GlpiPlugin\\Mydashboard\\Datatable\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Call to method toggleWidgetRefresh\(\) on an unknown class GlpiPlugin\\Mydashboard\\Datatable\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Dashboard.php
+
+		-
+			message: '#^Instantiated class GlpiPlugin\\Mydashboard\\Datatable not found\.$#'
 			identifier: class.notFound
 			count: 1
 			path: src/Dashboard.php
@@ -69,7 +93,7 @@ parameters:
 		-
 			message: '#^Instantiated class GlpiPlugin\\Mydashboard\\Html not found\.$#'
 			identifier: class.notFound
-			count: 2
+			count: 1
 			path: src/Dashboard.php
 
 		-
@@ -157,12 +181,6 @@ parameters:
 			path: src/Group.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Group.php
-
-		-
 			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -241,12 +259,6 @@ parameters:
 			path: src/Profile.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Profile.php
-
-		-
 			message: '#^PHPDoc tag @return has invalid value \(\)\: Unexpected token "\\n     ", expected type at offset 48 on line 4$#'
 			identifier: phpDoc.parseError
 			count: 1
@@ -259,31 +271,7 @@ parameters:
 			path: src/RuleVip.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/RuleVip.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/RuleVipCollection.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/Ticket.php
-
-		-
 			message: '#^Class GlpiPlugin\\Vip\\RuleVipCollection constructor invoked with 1 parameter, 0 required\.$#'
 			identifier: arguments.count
 			count: 2
-			path: src/Vip.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
 			path: src/Vip.php

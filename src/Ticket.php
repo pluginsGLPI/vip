@@ -36,11 +36,6 @@ use Glpi\Application\View\TemplateRenderer;
 use Printer;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
-
 class Ticket extends CommonDBTM
 {
     public static $types = ['Ticket', 'Printer', 'Computer'];

@@ -41,10 +41,6 @@ use MassiveAction;
 use Migration;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 class Group extends CommonDBTM
 {
     public static $rightname = "plugin_vip";
@@ -116,6 +112,23 @@ class Group extends CommonDBTM
         foreach ($tables_glpi as $table_glpi) {
             $DB->delete($table_glpi, ['itemtype' => Group::class]);
         }
+
+        // Search options injected on core itemtypes (see plugin_vip_getAddSearchOptions())
+        $DB->delete('glpi_displaypreferences', [
+            'OR' => [
+                [
+                    'itemtype' => [\Ticket::class, \Computer::class, \Printer::class],
+                    'num'      => 10100,
+                ],
+                [
+                    'itemtype' => \Group::class,
+                    'num'      => 10150,
+                ],
+            ],
+        ]);
+
+        // Legacy profiles table, only read by the rights migration
+        $DB->dropTable('glpi_plugin_vip_profiles', true);
     }
 
     /**
@@ -285,10 +298,35 @@ class Group extends CommonDBTM
         return $vip;
     }
 
+    /**
+     * Load a VIP group only if the matching core group is visible from the session
+     * (the VIP table has no entities_id column, the scope is carried by glpi_groups).
+     *
+     * @param int $id
+     *
+     * @return self|false
+     */
+    private static function getVisibleVipGroup($id)
+    {
+        $core_group = new \Group();
+        if (
+            !$core_group->getFromDB((int) $id)
+            || !Session::haveAccessToEntity($core_group->getEntityID(), $core_group->isRecursive())
+        ) {
+            return false;
+        }
+
+        $grp = new self();
+        if ($grp->getFromDB((int) $id)) {
+            return $grp;
+        }
+        return false;
+    }
+
     public static function getVipName($id)
     {
-        $grp = new self();
-        if ($grp->getFromDB($id)) {
+        $grp = self::getVisibleVipGroup($id);
+        if ($grp !== false) {
             return $grp->fields["name"];
         }
         return "VIP";
@@ -296,8 +334,8 @@ class Group extends CommonDBTM
 
     public static function getVipColor($id)
     {
-        $grp = new self();
-        if ($grp->getFromDB($id)) {
+        $grp = self::getVisibleVipGroup($id);
+        if ($grp !== false) {
             return $grp->fields["vip_color"];
         }
         return "darkred";
@@ -305,8 +343,8 @@ class Group extends CommonDBTM
 
     public static function getVipIcon($id)
     {
-        $grp = new self();
-        if ($grp->getFromDB($id)) {
+        $grp = self::getVisibleVipGroup($id);
+        if ($grp !== false) {
             return $grp->fields["vip_icon"];
         }
         return "ti-vip";
@@ -401,7 +439,8 @@ class Group extends CommonDBTM
     ) {
         $vip = new self();
         //We check if it's really a massive action of vip
-        if (!str_contains($ma->getAction(), "plugin_vip_update")) {
+        // The core splits the "Group::class:isvip" key: getAction() returns "isvip"
+        if ($ma->getAction() !== 'isvip') {
             $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
         } elseif ($vip->canCreate()) {
             $input = $ma->getInput();

@@ -35,10 +35,6 @@ use CommonDBTM;
 use Group_User;
 use User;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 /**
  * Class Vip
  */

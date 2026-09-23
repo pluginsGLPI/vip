@@ -32,13 +32,11 @@ namespace GlpiPlugin\Vip;
 use CommonGLPI;
 use CommonITILActor;
 use CommonITILObject;
-use DBmysqlIterator;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use Group_User;
 use Html;
 use GlpiPlugin\Mydashboard\Datatable;
-use GlpiPlugin\Mydashboard\Helper;
 use GlpiPlugin\Mydashboard\Html as MydashboardHtml;
 use GlpiPlugin\Mydashboard\Menu;
 use GlpiPlugin\Mydashboard\Widget;
@@ -77,14 +75,14 @@ class Dashboard extends CommonGLPI
     {
         global $DB;
 
-        if (!Session::haveRight('plugin_vip', READ)) {
+        if (!Session::haveRight('plugin_vip', READ) || !\Ticket::canView()) {
             return new MydashboardHtml();
         }
 
         $dbu = new DbUtils();
         switch ($widgetId) {
             case $this->getType() . "1":
-                $widget = new MydashboardHtml();
+                $widget = new Datatable();
 
                 $link_ticket = Toolbox::getItemTypeFormURL("Ticket");
 
@@ -95,6 +93,7 @@ class Dashboard extends CommonGLPI
                 }
 
                 $criteria = [
+                    'DISTINCT' => true,
                     'SELECT' => [
                         'glpi_tickets.id AS tickets_id', 'glpi_tickets.status AS status', 'glpi_tickets.time_to_resolve AS time_to_resolve',
                     ],
@@ -127,9 +126,9 @@ class Dashboard extends CommonGLPI
                 if (count($groups) > 0) {
                     $criteria['WHERE']['glpi_groups_tickets.groups_id'] = $groups;
                 }
-                $it = new DBmysqlIterator($DB);
-                $it->buildQuery($criteria);
-                $widget  = Helper::getWidgetsFromDBQuery('table', $it->getSql());
+                // Only list the tickets the profile is allowed to see
+                $criteria = array_merge_recursive($criteria, \Ticket::getCriteriaFromProfile());
+
                 $headers = [__('ID'),
                     _n('Requester', 'Requesters', 2),
                     __('Status'),

@@ -31,11 +31,7 @@ namespace GlpiPlugin\Vip;
 
 use DbUtils;
 use Html;
-
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
+use Session;
 
 /**
  * Rule class store all informations about a GLPI rule :
@@ -49,6 +45,15 @@ class RuleVip extends \Rule
     // From Rule
     public static $rightname = 'plugin_vip';
     public $can_sort = true;
+
+    /**
+     * Same right as RuleVipCollection::canView(), so that every checkGlobal(READ)
+     * on a rule (e.g. front/rule.test.php) requires UPDATE.
+     */
+    public static function canView(): bool
+    {
+        return Session::haveRight(self::$rightname, UPDATE);
+    }
 
     /**
      * @return string
