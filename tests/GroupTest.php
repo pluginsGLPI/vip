@@ -42,14 +42,14 @@ class GroupTest extends DbTestCase
      *
      * @return int the group id, shared by glpi_groups and glpi_plugin_vip_groups
      */
-    private function createVipGroup(array $vip_fields = []): int
+    private function createVipGroup(array $vip_fields = [], ?int $entities_id = null): int
     {
         global $DB;
 
         $group = new \Group();
         $gid   = (int) $group->add([
             'name'        => 'VIP group ' . mt_rand(),
-            'entities_id' => 0,
+            'entities_id' => $entities_id ?? $this->getTestRootEntity(true),
         ]);
         $this->assertGreaterThan(0, $gid);
 
@@ -137,6 +137,23 @@ class GroupTest extends DbTestCase
         $this->assertSame('Platinum', Group::getVipName($gid));
         $this->assertSame('#00ff00', Group::getVipColor($gid));
         $this->assertSame('ti-crown', Group::getVipIcon($gid));
+    }
+
+    public function testGetVipGettersReturnDefaultsForGroupOutsideActiveEntities(): void
+    {
+        $this->login();
+
+        // The test session is scoped to _test_root_entity: a non-recursive group
+        // in the root entity is not visible, so its VIP settings must not leak.
+        $gid = $this->createVipGroup([
+            'name'      => 'Hidden',
+            'vip_color' => '#123456',
+            'vip_icon'  => 'ti-crown',
+        ], 0);
+
+        $this->assertSame('VIP', Group::getVipName($gid));
+        $this->assertNotSame('#123456', Group::getVipColor($gid));
+        $this->assertNotSame('ti-crown', Group::getVipIcon($gid));
     }
 
     public function testGetVipGettersReturnDefaultsForUnknownId(): void
