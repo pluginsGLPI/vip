@@ -53,10 +53,16 @@ class Ticket extends CommonDBTM
             $result = $DB->request([
                 'SELECT' => ['glpi_plugin_vip_groups.id'],
                 'FROM' => 'glpi_groups_users',
-                'LEFT JOIN' => [
+                'INNER JOIN' => [
                     'glpi_plugin_vip_groups' => [
                         'ON' => [
                             'glpi_plugin_vip_groups' => 'id',
+                            'glpi_groups_users' => 'groups_id',
+                        ],
+                    ],
+                    'glpi_groups' => [
+                        'ON' => [
+                            'glpi_groups' => 'id',
                             'glpi_groups_users' => 'groups_id',
                         ],
                     ],
@@ -64,6 +70,9 @@ class Ticket extends CommonDBTM
                 'WHERE' => [
                     'glpi_plugin_vip_groups.isvip' => 1,
                     'glpi_groups_users.users_id' => $uid,
+                    // Same visibility rule as getUserVipList(): membership of a VIP group
+                    // outside the caller's active entities must not be revealed.
+                    getEntitiesRestrictCriteria('glpi_groups', '', '', true),
                 ],
             ]);
             if (count($result) > 0) {

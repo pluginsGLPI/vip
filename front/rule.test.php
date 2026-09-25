@@ -27,6 +27,7 @@
  * --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Vip\RuleVip;
 
 Session::checkCentralAccess();
@@ -35,13 +36,7 @@ $allowed_types = [RuleVip::class];
 $raw_type = $_POST["sub_type"] ?? $_GET["sub_type"] ?? '';
 $sub_type = in_array($raw_type, $allowed_types, true) ? $raw_type : '';
 
-if (isset($_POST["rules_id"])) {
-    $rules_id = $_POST["rules_id"];
-} elseif (isset($_GET["rules_id"])) {
-    $rules_id = $_GET["rules_id"];
-} else {
-    $rules_id = 0;
-}
+$rules_id = (int) ($_POST["rules_id"] ?? $_GET["rules_id"] ?? 0);
 
 $dbu = new DbUtils();
 
@@ -49,6 +44,15 @@ if (!$sub_type || !$rule = $dbu->getItemForItemtype($sub_type)) {
     exit;
 }
 $rule->checkGlobal(READ);
+
+// glpi_rules is shared by every rule type: without this check a VIP manager could preview
+// the criteria and actions of any core or plugin rule (e.g. authorization rules) by id.
+if (
+    $rules_id > 0
+    && (!$rule->getFromDB($rules_id) || $rule->fields['sub_type'] !== RuleVip::class)
+) {
+    throw new AccessDeniedHttpException();
+}
 
 $test_rule_output = null;
 

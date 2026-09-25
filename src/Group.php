@@ -442,7 +442,8 @@ class Group extends CommonDBTM
         // The core splits the "Group::class:isvip" key: getAction() returns "isvip"
         if ($ma->getAction() !== 'isvip') {
             $ma->itemDone($item->getType(), $ids, MassiveAction::ACTION_KO);
-        } elseif ($vip->canCreate()) {
+        } elseif (Session::haveRight(self::$rightname, UPDATE)) {
+            // Same right bit as the action declaration (setup.php), the tab and group.form.php.
             $input = $ma->getInput();
             $isvip = (int) (bool) ($input['isvip'] ?? 0);
             foreach ($ids as $id) {
