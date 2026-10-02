@@ -56,6 +56,18 @@ class RuleVipTest extends TestCase
         $this->assertSame('glpi_groups', $actions['groups_id']['table']);
     }
 
+    public function testGetActionsRestrictsGroupsToVipGroups(): void
+    {
+        $condition = $this->makeRule()->getActions()['groups_id']['condition'];
+
+        $this->assertCount(1, $condition);
+        $this->assertInstanceOf(\Glpi\DBAL\QueryExpression::class, $condition[0]);
+        $this->assertSame(
+            "`glpi_groups`.`id` IN (SELECT `id` FROM `glpi_plugin_vip_groups` WHERE `isvip` = '1')",
+            $condition[0]->getValue(),
+        );
+    }
+
     public function testMaxActionsCountMatchesActions(): void
     {
         $rule = $this->makeRule();

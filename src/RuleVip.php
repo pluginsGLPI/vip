@@ -29,7 +29,10 @@
 
 namespace GlpiPlugin\Vip;
 
+use DBmysql;
 use DbUtils;
+use Glpi\DBAL\QueryExpression;
+use Glpi\DBAL\QuerySubQuery;
 use Html;
 use Session;
 
@@ -132,9 +135,19 @@ class RuleVip extends \Rule
         $actions['groups_id']['name'] = __('Group');
         $actions['groups_id']['type'] = 'dropdown';
         $actions['groups_id']['table'] = 'glpi_groups';
-        // A VIP rule only ever grants a VIP group: Vip::applyRules() enforces it on execution
-        $vip_groups = Group::getVipGroupIds();
-        $actions['groups_id']['condition'] = ['glpi_groups.id' => $vip_groups ?: [0]];
+        // A VIP rule only ever grants a VIP group: Vip::applyRules() enforces it on execution.
+        // The restriction is resolved by SQL when the dropdown is filled, so building the
+        // actions needs no database access. It is a plain expression rather than a
+        // QuerySubQuery because Dropdown::show() serializes the condition into the session,
+        // and a QuerySubQuery drags its DBmysqlIterator (and the DB connection settings) along.
+        $vip_groups = new QuerySubQuery([
+            'SELECT' => 'id',
+            'FROM'   => Group::getTable(),
+            'WHERE'  => ['isvip' => 1],
+        ]);
+        $actions['groups_id']['condition'] = [
+            new QueryExpression(DBmysql::quoteName('glpi_groups.id') . ' IN ' . $vip_groups->getQuery()),
+        ];
 
         return $actions;
     }

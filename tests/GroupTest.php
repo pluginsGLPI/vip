@@ -163,7 +163,7 @@ class GroupTest extends DbTestCase
         $unknown = 999999;
 
         $this->assertSame('VIP', Group::getVipName($unknown));
-        $this->assertSame('darkred', Group::getVipColor($unknown));
+        $this->assertSame('#8b0000', Group::getVipColor($unknown));
         $this->assertSame('ti-vip', Group::getVipIcon($unknown));
     }
 }

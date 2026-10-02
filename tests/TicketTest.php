@@ -41,16 +41,20 @@ class TicketTest extends DbTestCase
     /**
      * Create a VIP group (id = groups_id) plus a user that belongs to it.
      *
+     * The group lands in the test root entity by default: login() activates that entity and
+     * its children only, and the VIP lookups never reveal a group outside the active entities.
+     *
      * @return array{0:int,1:int} [group id, user id]
      */
-    private function createVipGroupWithUser(int $isvip = 1): array
+    private function createVipGroupWithUser(int $isvip = 1, ?int $entities_id = null): array
     {
         global $DB;
 
         $group = new \Group();
         $gid   = (int) $group->add([
-            'name'        => 'VIP group ' . mt_rand(),
-            'entities_id' => 0,
+            'name'         => 'VIP group ' . mt_rand(),
+            'entities_id'  => $entities_id ?? $this->getTestRootEntity(true),
+            'is_recursive' => 0,
         ]);
         $this->assertGreaterThan(0, $gid);
 
@@ -68,7 +72,7 @@ class TicketTest extends DbTestCase
             'password'     => 'test1234',
             'password2'    => 'test1234',
             '_profiles_id' => 1,
-            'entities_id'  => 0,
+            'entities_id'  => $this->getTestRootEntity(true),
         ]);
         $this->assertGreaterThan(0, $uid);
 
@@ -90,6 +94,18 @@ class TicketTest extends DbTestCase
         $this->assertSame($gid, Ticket::isUserVip($uid));
     }
 
+    public function testIsUserVipHidesVipGroupOutsideActiveEntities(): void
+    {
+        $this->login();
+
+        // Root entity (0) is not among the entities login() activates
+        $this->assertNotContains(0, $_SESSION['glpiactiveentities']);
+
+        [, $uid] = $this->createVipGroupWithUser(1, 0);
+
+        $this->assertFalse(Ticket::isUserVip($uid));
+    }
+
     public function testIsUserVipReturnsFalseForNonVipUser(): void
     {
         $this->login();
@@ -102,7 +118,7 @@ class TicketTest extends DbTestCase
             'name'        => 'plain_user_' . mt_rand(),
             'password'    => 'test1234',
             'password2'   => 'test1234',
-            'entities_id' => 0,
+            'entities_id' => $this->getTestRootEntity(true),
         ]);
 
         $this->assertFalse(Ticket::isUserVip($uid));
@@ -121,7 +137,7 @@ class TicketTest extends DbTestCase
 
         [, $uid] = $this->createVipGroupWithUser();
 
-        $this->assertContains($uid, Ticket::getUserVipList(0));
+        $this->assertContains($uid, Ticket::getUserVipList($this->getTestRootEntity(true)));
     }
 
     public function testIsComputerVipDetectsVipOwner(): void
@@ -133,7 +149,7 @@ class TicketTest extends DbTestCase
         $computer = new \Computer();
         $cid      = (int) $computer->add([
             'name'        => 'vip_computer_' . mt_rand(),
-            'entities_id' => 0,
+            'entities_id' => $this->getTestRootEntity(true),
             'users_id'    => $uid,
         ]);
         $this->assertGreaterThan(0, $cid);
@@ -151,7 +167,7 @@ class TicketTest extends DbTestCase
         $tid    = (int) $ticket->add([
             'name'        => 'vip_ticket_' . mt_rand(),
             'content'     => 'Test ticket for VIP detection',
-            'entities_id' => 0,
+            'entities_id' => $this->getTestRootEntity(true),
         ]);
         $this->assertGreaterThan(0, $tid);
 
