@@ -273,5 +273,5 @@ parameters:
 		-
 			message: '#^Class GlpiPlugin\\Vip\\RuleVipCollection constructor invoked with 1 parameter, 0 required\.$#'
 			identifier: arguments.count
-			count: 2
+			count: 1
 			path: src/Vip.php

@@ -92,6 +92,16 @@ class Group extends CommonDBTM
             $migration->addField($table, "name", "varchar(100) DEFAULT 'VIP'");
             $migration->migrationOneTable($table);
         }
+
+        // Older versions stored the colour and the icon as free text: bring the rows they left
+        // behind into the domain prepareInputForUpdate() now enforces.
+        foreach ($DB->request(['SELECT' => ['id', 'vip_color', 'vip_icon'], 'FROM' => $table]) as $row) {
+            $color = self::normalizeColor($row['vip_color']);
+            $icon  = self::normalizeIcon($row['vip_icon']);
+            if ($color !== $row['vip_color'] || $icon !== $row['vip_icon']) {
+                $DB->update($table, ['vip_color' => $color, 'vip_icon' => $icon], ['id' => $row['id']]);
+            }
+        }
     }
 
     public static function uninstall()
@@ -323,6 +333,26 @@ class Group extends CommonDBTM
         return false;
     }
 
+    /**
+     * Whether the group is flagged as a VIP group.
+     */
+    public static function isVipGroup(int $groups_id): bool
+    {
+        $grp = new self();
+
+        return $groups_id > 0
+            && $grp->getFromDB($groups_id)
+            && (int) $grp->fields['isvip'] === 1;
+    }
+
+    /**
+     * @return int[] ids of the groups flagged as VIP
+     */
+    public static function getVipGroupIds(): array
+    {
+        return array_map('intval', array_keys((new self())->find(['isvip' => 1])));
+    }
+
     public static function getVipName($id)
     {
         $grp = self::getVisibleVipGroup($id);
@@ -336,16 +366,16 @@ class Group extends CommonDBTM
     {
         $grp = self::getVisibleVipGroup($id);
         if ($grp !== false) {
-            return $grp->fields["vip_color"];
+            return self::normalizeColor($grp->fields["vip_color"]);
         }
-        return "darkred";
+        return "#8b0000";
     }
 
     public static function getVipIcon($id)
     {
         $grp = self::getVisibleVipGroup($id);
         if ($grp !== false) {
-            return $grp->fields["vip_icon"];
+            return self::normalizeIcon($grp->fields["vip_icon"]);
         }
         return "ti-vip";
     }
@@ -411,20 +441,35 @@ class Group extends CommonDBTM
             $input['name'] = strip_tags(RichText::getTextFromHtml((string) $input['name']));
         }
         if (isset($input['vip_icon']) && $input['vip_icon']) {
-            $icon = strip_tags(RichText::getTextFromHtml($input['vip_icon']));
-            // Only allow Tabler-like icon class tokens; fall back to the default otherwise.
-            if (!preg_match('/^[A-Za-z0-9 _-]+$/', $icon)) {
-                $icon = 'ti-vip';
-            }
-            $input['vip_icon'] = $icon;
+            $input['vip_icon'] = self::normalizeIcon(strip_tags(RichText::getTextFromHtml($input['vip_icon'])));
         }
         if (isset($input['vip_color'])) {
-            // Only allow #rgb / #rrggbb hex colors; fall back to the default otherwise.
-            if (!preg_match('/^#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?$/', (string) $input['vip_color'])) {
-                $input['vip_color'] = '#ff0000';
-            }
+            $input['vip_color'] = self::normalizeColor($input['vip_color']);
         }
         return $input;
+    }
+
+    /**
+     * Only a #rgb / #rrggbb hex colour, the default otherwise. The value lands in a style
+     * attribute, where Twig escaping stops a break-out but not an extra CSS declaration.
+     *
+     * @param mixed $color
+     */
+    public static function normalizeColor($color): string
+    {
+        return preg_match('/^#[0-9A-Fa-f]{3}(?:[0-9A-Fa-f]{3})?$/', (string) $color)
+            ? (string) $color
+            : '#ff0000';
+    }
+
+    /**
+     * Only Tabler-like icon class tokens, the default otherwise.
+     *
+     * @param mixed $icon
+     */
+    public static function normalizeIcon($icon): string
+    {
+        return preg_match('/^[A-Za-z0-9 _-]+$/', (string) $icon) ? (string) $icon : 'ti-vip';
     }
 
     /**

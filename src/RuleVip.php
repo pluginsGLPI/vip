@@ -132,6 +132,9 @@ class RuleVip extends \Rule
         $actions['groups_id']['name'] = __('Group');
         $actions['groups_id']['type'] = 'dropdown';
         $actions['groups_id']['table'] = 'glpi_groups';
+        // A VIP rule only ever grants a VIP group: Vip::applyRules() enforces it on execution
+        $vip_groups = Group::getVipGroupIds();
+        $actions['groups_id']['condition'] = ['glpi_groups.id' => $vip_groups ?: [0]];
 
         return $actions;
     }

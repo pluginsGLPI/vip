@@ -59,101 +59,85 @@ class Vip extends CommonDBTM
 
     public static function afterAdd(User $user)
     {
-        $rulevip   = new RuleVip();
-        $criterias = $rulevip->getCriterias();
-
-        if (isset($user->fields["authtype"])
-            && (($user->fields["authtype"] == Auth::LDAP)
-                || Auth::isAlternateAuth($user->fields['authtype']))) {
-            $config_ldap = new AuthLDAP();
-            $ds          = false;
-
-            if ($config_ldap->getFromDB($user->fields['auths_id'])) {
-                $ds = $config_ldap->connect();
-            }
-
-            if ($ds) {
-                $info = AuthLdap::getUserByDn($ds, $user->fields['user_dn'], []);
-            }
-
-            $input = [];
-            foreach ($criterias as $criteria) {
-                if (isset($criteria['field']) && isset($info[$criteria['field']]) && isset($info[$criteria['field']][0])) {
-                    $input[$criteria['field']] = $info[$criteria['field']][0];
-                }
-                if (isset($info["dn"])) {
-                    $input["dn"] = $info["dn"];
-                }
-            }
-
-            $ruleCollection = new RuleVipCollection($user->fields['entities_id']);
-            $fields         = [];
-
-            $fields = $ruleCollection->processAllRules($input, $fields, []);
-
-            //Store rule that matched
-            if (isset($fields['groups_id'])) {
-                $groupuser = new Group_User();
-
-                $result = $groupuser->find([
-                    'users_id' => $user->getID(),
-                    'groups_id' => $fields['groups_id'],
-                ]);
-                if (!$result) {
-                    $groupuser->add(['users_id'  => $user->getID(),
-                        'groups_id' => $fields['groups_id']]);
-                }
-            }
-        }
+        self::applyRules($user);
     }
 
     public static function afterUpdate(User $user)
     {
-        $rulevip   = new RuleVip();
-        $criterias = $rulevip->getCriterias();
+        // The hook fires on every update of a user (last login, preferences, tokens...): only
+        // the fields that change the directory entry the rules read are worth an LDAP bind.
+        if (!array_intersect(['user_dn', 'authtype', 'auths_id', 'entities_id'], $user->updates)) {
+            return;
+        }
 
-        if (isset($user->fields["authtype"])
-            && (($user->fields["authtype"] == Auth::LDAP)
+        self::applyRules($user);
+    }
+
+    /**
+     * Run the VIP rules against the LDAP entry of a user, and add the user to the VIP group
+     * the matching rule names.
+     */
+    private static function applyRules(User $user): void
+    {
+        global $DB;
+
+        if (!isset($user->fields["authtype"])
+            || !(($user->fields["authtype"] == Auth::LDAP)
                 || Auth::isAlternateAuth($user->fields['authtype']))) {
-            $config_ldap = new AuthLDAP();
-            $ds          = false;
+            return;
+        }
 
-            if ($config_ldap->getFromDB($user->fields['auths_id'])) {
-                $ds = $config_ldap->connect();
+        // No active VIP rule: skip the LDAP bind altogether
+        if (count($DB->request([
+            'COUNT' => 'cpt',
+            'FROM'  => 'glpi_rules',
+            'WHERE' => ['sub_type' => RuleVip::class, 'is_active' => 1],
+        ])->current()['cpt'] ?? 0) === 0) {
+            return;
+        }
+
+        $config_ldap = new AuthLDAP();
+        if (!$config_ldap->getFromDB($user->fields['auths_id'])) {
+            return;
+        }
+        $ds = $config_ldap->connect();
+        if (!$ds) {
+            return;
+        }
+        $info = AuthLdap::getUserByDn($ds, $user->fields['user_dn'], []);
+        if (!is_array($info)) {
+            return;
+        }
+
+        $input = [];
+        foreach ((new RuleVip())->getCriterias() as $criteria) {
+            if (isset($criteria['field'], $info[$criteria['field']][0])) {
+                $input[$criteria['field']] = $info[$criteria['field']][0];
             }
+        }
+        if (isset($info["dn"])) {
+            $input["dn"] = $info["dn"];
+        }
 
-            if ($ds) {
-                $info = AuthLdap::getUserByDn($ds, $user->fields['user_dn'], []);
-            }
+        $ruleCollection = new RuleVipCollection($user->fields['entities_id']);
+        $fields         = $ruleCollection->processAllRules($input, [], []);
 
-            $input = [];
-            foreach ($criterias as $criteria) {
-                if (isset($criteria['field']) && isset($info[$criteria['field']]) && isset($info[$criteria['field']][0])) {
-                    $input[$criteria['field']] = $info[$criteria['field']][0];
-                }
-                if (isset($info["dn"])) {
-                    $input["dn"] = $info["dn"];
-                }
-            }
+        $groups_id = (int) ($fields['groups_id'] ?? 0);
+        if ($groups_id <= 0) {
+            return;
+        }
 
-            $ruleCollection = new RuleVipCollection($user->fields['entities_id']);
-            $fields         = [];
+        // The group comes from a rule action, a value stored by whoever manages the VIP rules:
+        // the add below runs without any right check, so it must only ever grant a VIP group.
+        // A rule naming any other group would otherwise hand out membership of any group of
+        // any entity to the users it matches.
+        if (!Group::isVipGroup($groups_id)) {
+            return;
+        }
 
-            $fields = $ruleCollection->processAllRules($input, $fields, []);
-
-            //Store rule that matched
-            if (isset($fields['groups_id'])) {
-                $groupuser = new Group_User();
-
-                $result = $groupuser->find([
-                    'users_id' => $user->getID(),
-                    'groups_id' => $fields['groups_id'],
-                ]);
-                if (!$result) {
-                    $groupuser->add(['users_id'  => $user->getID(),
-                        'groups_id' => $fields['groups_id']]);
-                }
-            }
+        $groupuser = new Group_User();
+        if (!$groupuser->find(['users_id' => $user->getID(), 'groups_id' => $groups_id])) {
+            $groupuser->add(['users_id' => $user->getID(), 'groups_id' => $groups_id]);
         }
     }
 }
