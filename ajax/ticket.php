@@ -28,8 +28,9 @@
  */
 
 use GlpiPlugin\Vip\Ticket;
+use GlpiPlugin\Vip\Vip;
 
-Session::checkRight('plugin_vip', READ);
+Session::checkRight(Vip::$rightname, READ);
 
 $action = $_POST['action'] ?? '';
 switch ($action) {

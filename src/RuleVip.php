@@ -46,8 +46,7 @@ use Session;
 class RuleVip extends \Rule
 {
     // From Rule
-    public static $rightname = 'plugin_vip';
-    public $can_sort = true;
+    public static string $rightname = 'plugin_vip';
 
     /**
      * Same right as RuleVipCollection::canView(), so that every checkGlobal(READ)
@@ -145,8 +144,13 @@ class RuleVip extends \Rule
             'FROM'   => Group::getTable(),
             'WHERE'  => ['isvip' => 1],
         ]);
+        // GLPI 12 prepared statements: getQuery() now holds a "?" placeholder, so its bound
+        // value has to travel with the expression (as CommonITILObject does with getParams()).
         $actions['groups_id']['condition'] = [
-            new QueryExpression(DBmysql::quoteName('glpi_groups.id') . ' IN ' . $vip_groups->getQuery()),
+            new QueryExpression(
+                DBmysql::quoteName('glpi_groups.id') . ' IN ' . $vip_groups->getQuery(),
+                values: $vip_groups->getParams(),
+            ),
         ];
 
         return $actions;

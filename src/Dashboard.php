@@ -75,7 +75,7 @@ class Dashboard extends CommonGLPI
     {
         global $DB;
 
-        if (!Session::haveRight('plugin_vip', READ) || !\Ticket::canView()) {
+        if (!Session::haveRight(Vip::$rightname, READ) || !\Ticket::canView()) {
             return new MydashboardHtml();
         }
 

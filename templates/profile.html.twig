@@ -32,7 +32,6 @@
         {{ rights_matrix|raw }}
     {% if can_edit and close_form %}
         <div class="center">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
             {{ id_field|raw }}
             {{ submit_field|raw }}
         </div>

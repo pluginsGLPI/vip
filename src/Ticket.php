@@ -203,7 +203,7 @@ class Ticket extends CommonDBTM
         // VIP status is reserved to holders of the plugin_vip READ right, like
         // the JavaScript badge injection gated in setup.php. Guard here too so
         // the banner cannot leak VIP membership regardless of the caller.
-        if (!Session::haveRight('plugin_vip', READ)) {
+        if (!Session::haveRight(Vip::$rightname, READ)) {
             return;
         }
 

@@ -32,6 +32,7 @@ use GlpiPlugin\Vip\Group;
 use GlpiPlugin\Vip\Profile;
 use GlpiPlugin\Vip\RuleVip;
 use GlpiPlugin\Vip\Ticket;
+use GlpiPlugin\Vip\Vip;
 
 function plugin_vip_install()
 {
@@ -97,7 +98,7 @@ function plugin_vip_getAddSearchOptions($itemtype)
     $sopt = [];
 
     if (Session::getCurrentInterface() == 'central'
-       && Session::haveRight('plugin_vip', READ)) {
+       && Session::haveRight(Vip::$rightname, READ)) {
         switch ($itemtype) {
             case 'Ticket':
             case 'Computer':
@@ -264,7 +265,7 @@ function plugin_vip_executeActions($options)
 
 function plugin_vip_redefine_api_schemas(array $data): array
 {
-    if (!Session::haveRight('plugin_vip', READ)) {
+    if (!Session::haveRight(Vip::$rightname, READ)) {
         return $data;
     }
     foreach ($data['schemas'] as &$schema) {

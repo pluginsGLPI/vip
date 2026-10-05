@@ -40,7 +40,7 @@ use User;
  */
 class Vip extends CommonDBTM
 {
-    public static $rightname = 'plugin_vip';
+    public static string $rightname = 'plugin_vip';
 
     /**
      * @param int $nb

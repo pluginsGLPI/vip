@@ -28,9 +28,10 @@
  */
 
 use GlpiPlugin\Vip\Group;
+use GlpiPlugin\Vip\Vip;
 
 Html::header_nocache();
-Session::checkRight('plugin_vip', READ);
+Session::checkRight(Vip::$rightname, READ);
 header("Content-Type: application/json; charset=UTF-8");
 
 global $CFG_GLPI;

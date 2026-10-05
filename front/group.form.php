@@ -29,8 +29,9 @@
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Vip\Group;
+use GlpiPlugin\Vip\Vip;
 
-Session::checkRight("plugin_vip", UPDATE);
+Session::checkRight(Vip::$rightname, UPDATE);
 
 $grp = new Group();
 

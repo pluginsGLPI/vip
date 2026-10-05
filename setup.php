@@ -54,17 +54,17 @@ function plugin_init_vip()
     Plugin::registerClass(Profile::class, ['addtabon' => ['Profile']]);
     $PLUGIN_HOOKS[Hooks::CHANGE_PROFILE]['vip'] = [Profile::class, 'changeProfile'];
 
-    if (Session::haveRight('plugin_vip', UPDATE)) {
+    if (Session::haveRight(Vip::$rightname, UPDATE)) {
         Plugin::registerClass(Group::class, ['addtabon' => ['Group']]);
         $PLUGIN_HOOKS[Hooks::USE_MASSIVE_ACTION]['vip'] = 1;
         Plugin::registerClass(Ticket::class);
     }
 
-    if (class_exists('PluginMydashboardMenu') && Session::haveRight('plugin_vip', READ)) {
+    if (class_exists('PluginMydashboardMenu') && Session::haveRight(Vip::$rightname, READ)) {
         $PLUGIN_HOOKS['mydashboard']['vip'] = [Dashboard::class];
     }
 
-    if (Session::haveRight('plugin_vip', READ)
+    if (Session::haveRight(Vip::$rightname, READ)
     && isset($_SESSION["glpiactiveprofile"]["interface"])
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS[Hooks::ADD_JAVASCRIPT]['vip'][] = 'js/vip.js';
@@ -77,7 +77,7 @@ function plugin_init_vip()
             }
         }
     }
-    if (Session::haveRight('plugin_vip', READ)
+    if (Session::haveRight(Vip::$rightname, READ)
     && isset($_SESSION["glpiactiveprofile"]["interface"])
     && $_SESSION["glpiactiveprofile"]["interface"] != "helpdesk") {
         $PLUGIN_HOOKS['pre_show_item']['vip'] = [Ticket::class, 'showVIPInfos'];
@@ -104,8 +104,8 @@ function plugin_version_vip()
         'homepage'       => 'https://github.com/pluginsGLPI/vip',
         'requirements'   => [
             'glpi' => [
-                'min' => '11.0',
-                'max' => '12.0',
+                'min' => '11.0.99',
+                'max' => '12.0.99',
                 'dev' => false,
             ],
         ],

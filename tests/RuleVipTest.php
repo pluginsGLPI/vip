@@ -62,10 +62,12 @@ class RuleVipTest extends TestCase
 
         $this->assertCount(1, $condition);
         $this->assertInstanceOf(\Glpi\DBAL\QueryExpression::class, $condition[0]);
+        // GLPI 12 prepared statements: the value is a placeholder carried with its bound value
         $this->assertSame(
-            "`glpi_groups`.`id` IN (SELECT `id` FROM `glpi_plugin_vip_groups` WHERE `isvip` = '1')",
+            "`glpi_groups`.`id` IN (SELECT `id` FROM `glpi_plugin_vip_groups` WHERE `isvip` = ?)",
             $condition[0]->getValue(),
         );
+        $this->assertSame([1], $condition[0]->getParams());
     }
 
     public function testMaxActionsCountMatchesActions(): void

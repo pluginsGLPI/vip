@@ -43,7 +43,7 @@ use Session;
 
 class Group extends CommonDBTM
 {
-    public static $rightname = "plugin_vip";
+    public static string $rightname = "plugin_vip";
 
     public static function getIcon()
     {
@@ -151,11 +151,11 @@ class Group extends CommonDBTM
             $target = $options['target'];
         }
 
-        if (!Session::haveRight("plugin_vip", READ)) {
+        if (!Session::haveRight(Vip::$rightname, READ)) {
             return false;
         }
 
-        $canedit = Session::haveRight("plugin_vip", UPDATE);
+        $canedit = Session::haveRight(Vip::$rightname, UPDATE);
 
         if ($id) {
             $this->getFromDB($id);
@@ -222,7 +222,7 @@ class Group extends CommonDBTM
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         if ($item->getType() == 'Group'
-            && Session::haveRight("plugin_vip", UPDATE)) {
+            && Session::haveRight(Vip::$rightname, UPDATE)) {
             return self::createTabEntry(Vip::getTypeName());
         }
         return '';
@@ -249,7 +249,7 @@ class Group extends CommonDBTM
                 // (AJAX/GET tab load): re-check the UPDATE right and entity access here
                 // instead of relying solely on getTabNameForItem(), so a regression or a
                 // direct call can never INSERT without authorization.
-                if (Session::haveRight('plugin_vip', UPDATE)
+                if (Session::haveRight(Vip::$rightname, UPDATE)
                     && Session::haveAccessToEntity($item->getEntityID(), $item->isRecursive())) {
                     $grp->add(['id' => $ID]);
                 }
@@ -396,7 +396,7 @@ class Group extends CommonDBTM
     {
         $sopt = [];
 
-        if (Session::getCurrentInterface() == 'central' && Session::haveRight('plugin_vip', READ)) {
+        if (Session::getCurrentInterface() == 'central' && Session::haveRight(Vip::$rightname, READ)) {
             $rng1                         = 10150;
             $sopt[$rng1]['table']         = 'glpi_plugin_vip_groups';
             $sopt[$rng1]['field']         = 'isvip';

@@ -37,8 +37,8 @@ use Session;
 class RuleVipCollection extends \RuleCollection
 {
     // From RuleCollection
-    public static $rightname = 'plugin_vip';
-    public $menu_option = 'vip';
+    public static string $rightname = 'plugin_vip';
+    public string $menu_option = 'vip';
 
     public static function canView(): bool
     {
