@@ -37,7 +37,7 @@ use GlpiPlugin\Vip\Group;
 
 global $CFG_GLPI;
 
-define('PLUGIN_VIP_VERSION', '1.9.10');
+define('PLUGIN_VIP_VERSION', '2.0.0');
 
 if (!defined("PLUGIN_VIP_DIR")) {
     define("PLUGIN_VIP_DIR", Plugin::getPhpDir("vip"));
