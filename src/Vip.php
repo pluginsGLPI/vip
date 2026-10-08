@@ -87,8 +87,9 @@ class Vip extends CommonDBTM
             return;
         }
 
-        // No active VIP rule: skip the LDAP bind altogether
-        if (count($DB->request([
+        // No active VIP rule: skip the LDAP bind altogether. The COUNT request already returns
+        // the number of rules: count() on that integer threw a TypeError (ldap:synchronize_users).
+        if ((int) ($DB->request([
             'COUNT' => 'cpt',
             'FROM'  => 'glpi_rules',
             'WHERE' => ['sub_type' => RuleVip::class, 'is_active' => 1],
